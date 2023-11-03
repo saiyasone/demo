@@ -52,6 +52,7 @@ function LoginProvider() {
       {token ? (
         <Fragment>
           <Typography variant="h4">Token: {token}</Typography>
+          
           <ul>
             <li>
               {user?.firstName} {user?.lastName}{" "}

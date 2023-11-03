@@ -1,10 +1,15 @@
 import { useLazyQuery } from "@apollo/client";
 import { useEffect } from "react";
+import { QUERY_CONTACT } from "../apollo/gql-contact";
 
-export const fetchContact = () => {
+export function FetchContact() {
   const [getContact, { data: get_contact }] = useLazyQuery(QUERY_CONTACT, {
     fetchPolicy: "no-cache",
   });
+
+  useEffect(() => {
+    getContactData();
+  }, [get_contact]);
 
   async function getContactData() {
     try {
@@ -16,6 +21,4 @@ export const fetchContact = () => {
       console.log(error);
     }
   }
-
-  useEffect(() => {}, [get_contact]);
-};
+}
