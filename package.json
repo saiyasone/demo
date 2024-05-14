@@ -24,6 +24,7 @@
     "@uppy/url": "^3.6.1",
     "@uppy/webcam": "^3.4.1",
     "@uppy/xhr-upload": "^3.6.6",
+    "axios": "^1.6.8",
     "crypto-js": "^4.2.0",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.4",

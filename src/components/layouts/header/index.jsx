@@ -12,7 +12,9 @@ function Header() {
 
           <ul>
             <li>
-              <NavLink to="/">Home</NavLink>
+              <NavLink to="/">Uppy</NavLink>
+              <NavLink to="/home">Home</NavLink>
+              <NavLink to="/upload">upload</NavLink>
               <NavLink to="/contact">Contact</NavLink>
               <NavLink to="/coupon">Coupon</NavLink>
               <NavLink to="/login">Login</NavLink>

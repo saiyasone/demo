@@ -4,6 +4,7 @@ import Login from "./pages/login";
 import Contact from "./pages/contact";
 import Coupon from "./pages/coupon";
 import UppyPackage from "./pages/uppy";
+import UploadFile from "./pages/upload";
 
 const routers = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const routers = createBrowserRouter([
   {
     path: "/home",
     element: <Home />,
+  },
+  {
+    path: "/upload",
+    element: <UploadFile />,
   },
   {
     path: "/login",
