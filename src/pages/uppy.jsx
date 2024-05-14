@@ -5,7 +5,7 @@ import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
 import GoogleDrive from "@uppy/google-drive";
 import Dropbox from "@uppy/dropbox";
- 
+
 import xhrUpload from "@uppy/xhr-upload";
 import Instagram from "@uppy/instagram";
 import Url from "@uppy/url";
@@ -69,13 +69,16 @@ function UppyPackage() {
           ).toString();
 
           return {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "hee gorm",
             encryptedHeaders,
           };
         },
       })
       .on("file-added", (files) => {
-        console.log("File added:", files.data);
+        // console.log("File added:", files.data);
+      })
+      .on("file-removed", (data) => {
+        console.log("delete ", data.id);
       });
 
     setUppyInstance(uppy);
