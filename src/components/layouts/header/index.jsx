@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { HeaderContainer, HeaderNav } from "./css";
-import { Link } from "@mui/material";
+import { NavLink } from "react-router-dom";
 import logo from "../../../utils/images/logo192.png";
 
 function Header() {
@@ -12,9 +12,10 @@ function Header() {
 
           <ul>
             <li>
-              <Link href="/">Home</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/login">Login</Link>
+              <NavLink to="/">Home</NavLink>
+              <NavLink to="/contact">Contact</NavLink>
+              <NavLink to="/coupon">Coupon</NavLink>
+              <NavLink to="/login">Login</NavLink>
             </li>
           </ul>
         </HeaderNav>

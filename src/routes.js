@@ -2,10 +2,16 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import Contact from "./pages/contact";
+import Coupon from "./pages/coupon";
+import UppyPackage from "./pages/uppy";
 
 const routers = createBrowserRouter([
   {
     path: "",
+    element: <UppyPackage />,
+  },
+  {
+    path: "/home",
     element: <Home />,
   },
   {
@@ -15,6 +21,10 @@ const routers = createBrowserRouter([
   {
     path: "/contact",
     element: <Contact />,
+  },
+  {
+    path: "/coupon",
+    element: <Coupon />,
   },
 ]);
 

@@ -15,15 +15,19 @@ export const HeaderNav = styled(Box)({
 
   ul: {
     listStyle: "none",
-  },
-
-  ul: {
     li: {
       display: "flex",
       gap: "2rem",
 
       a: {
         textDecoration: "none",
+
+        "&:focus": {
+          color: "#000",
+        },
+        "&.active": {
+          color: "#d33",
+        },
       },
     },
   },

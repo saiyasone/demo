@@ -17,7 +17,6 @@ function Home() {
 
   async function handleEvent() {
     setToggle((val) => (val = !val));
-    console.log(toggle);
   }
 
   // use Animation

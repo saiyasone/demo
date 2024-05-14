@@ -4,13 +4,13 @@ import { Box, Typography, createTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { QUERY_CONTACT } from "../apollo/gql-contact";
 import { isDateToday } from "../utils/date";
+import Header from "../components/layouts/header";
 
 const theme = createTheme();
 const ContactContainer = styled(Box)({
   padding: "1rem 2rem",
-  backgroundColor: "limegreen",
   [theme.breakpoints.down("sm")]: {
-    backgroundColor: "red",
+    // backgroundColor: "red",
   },
 });
 
@@ -18,6 +18,7 @@ function Contact() {
   let currentDate = new Date();
   const [getContact, { data: get_contact }] = useLazyQuery(QUERY_CONTACT);
   const [contacts, setContact] = useState([]);
+
   async function getContactData() {
     try {
       const res = await getContact();
@@ -25,9 +26,9 @@ function Contact() {
         setContact(res.data.getContact.data);
         const useDate = isDateToday(currentDate.getDate() - 1);
         if (useDate) {
-          console.log(true);
+          // console.log(true);
         } else {
-          console.log(false);
+          // console.log(false);
         }
       }
     } catch (error) {
@@ -40,18 +41,21 @@ function Contact() {
   }, [get_contact]);
 
   return (
-    <ContactContainer>
-      <Typography variant="h3">Start With Contact</Typography>
-      <Box marginTop="1rem">
-        <ul style={{ listStyle: "none" }}>
-          {contacts.map((contact) => (
-            <li key={contact._id}>
-              {contact.email} {currentDate.getMonth()}
-            </li>
-          ))}
-        </ul>
-      </Box>
-    </ContactContainer>
+    <>
+      <Header />
+      <ContactContainer>
+        <Typography variant="h3">Start With Contact</Typography>
+        <Box marginTop="1rem">
+          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {contacts.map((contact) => (
+              <li key={contact._id} style={{ lineHeight: 1.6 }}>
+                {contact.email} {currentDate.getMonth()}
+              </li>
+            ))}
+          </ul>
+        </Box>
+      </ContactContainer>
+    </>
   );
 }
 
