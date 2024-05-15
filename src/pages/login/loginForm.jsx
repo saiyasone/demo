@@ -52,7 +52,7 @@ function LoginComponetForm() {
       if (res?.data?.userLogin) {
         setToken(res.data.userLogin.token);
         setUser(res.data.userLogin.data[0]);
-        console.log(res.data.userLogin.token);
+        localStorage.setItem("token", res.data.userLogin.token);
         successMessage("Login success");
       }
     } catch (error) {
