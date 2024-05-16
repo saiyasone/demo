@@ -10,7 +10,6 @@ import GoogleDrive from "@uppy/google-drive";
 import Dropbox from "@uppy/dropbox";
 
 import xhrUpload from "@uppy/xhr-upload";
-import Tus from "@uppy/tus";
 import Instagram from "@uppy/instagram";
 import Url from "@uppy/url";
 import Webcam from "@uppy/webcam";
@@ -27,6 +26,11 @@ function UppyPackage() {
   const companionUrl = "https://companion.uppy.io";
   const [uppyInstance, setUppyInstance] = useState(() => new Uppy());
 
+  async function fetchRandomData() {
+    const randomName = Math.floor(1111111 + Math.random() * 9999999);
+    return randomName;
+  }
+
   async function handleUpload() {
     if (!uppyInstance.getFiles().length) return;
 
@@ -35,14 +39,14 @@ function UppyPackage() {
       const dataFile = uppyInstance.getFiles();
 
       await dataFile.map(async (file) => {
-        const randomName = Math.floor(1111111 + Math.random() * 9999999);
         const extension = file?.name?.lastIndexOf(".");
         const fileExtension = file.name?.slice(extension);
+
         if (uppyInstance) {
           let result = await uploadFileAction({
             variables: {
               data: {
-                newFilename: `${randomName}.${fileExtension}`,
+                newFilename: `${file.data.customeNewName}${fileExtension}`,
                 filename: file.name,
                 fileType: file.type,
                 size: file.size.toString(),
@@ -53,15 +57,12 @@ function UppyPackage() {
               },
             },
           });
-
           if (result.data?.createFiles?._id) {
             const blob = new Blob([file], {
               type: file.type,
             });
-
             const newFile = new File([blob], file.name, { type: file.type });
             formData.append("file", newFile);
-
             await uppyInstance.upload();
           }
         }
@@ -97,48 +98,57 @@ function UppyPackage() {
     uppy.use(Instagram, {
       companionUrl,
     });
-    uppy.use(Tus, {
-      endpoint: "https://load.vshare.net/upload",
-    });
 
     uppy.use(Url, {
       companionUrl,
     });
-    // uppy.use(xhrUpload, {
-    //   endpoint: "https://load.vshare.net/upload",
-    //   formData: true,
-    //   method: "POST",
-    //   fieldName: "file",
+    uppy.use(xhrUpload, {
+      endpoint: "https://load.vshare.net/upload",
+      formData: true,
+      method: "POST",
+      fieldName: "file",
+      headers: (file) => {
+        const extension = file?.name?.lastIndexOf(".");
+        const fileExtension = file.name?.slice(extension);
 
-    //   headers: (file) => {
-    //     const randomName = Math.floor(1111111 + Math.random() * 9999999);
-    //     const extension = file?.name?.lastIndexOf(".");
-    //     const fileExtension = file.name?.slice(extension);
+        const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
+        const headers = {
+          REGION: "sg",
+          BASE_HOSTNAME: "storage.bunnycdn.com",
+          STORAGE_ZONE_NAME: "beta-vshare",
+          ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+          PATH: "6722542899692-114",
+          FILENAME: `${file.data.customeNewName}${fileExtension}`,
+          PATH_FOR_THUMBNAIL: "6722542899692-114",
+        };
+        const encryptedHeaders = CryptoJS.AES.encrypt(
+          JSON.stringify(headers),
+          secretKey
+        ).toString();
 
-    //     const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
-    //     const headers = {
-    //       REGION: "sg",
-    //       BASE_HOSTNAME: "storage.bunnycdn.com",
-    //       STORAGE_ZONE_NAME: "beta-vshare",
-    //       ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
-    //       PATH: "6722542899692-114",
-    //       FILENAME: `${randomName}.${fileExtension}`,
-    //       PATH_FOR_THUMBNAIL: "6722542899692-114",
-    //     };
-    //     const encryptedHeaders = CryptoJS.AES.encrypt(
-    //       JSON.stringify(headers),
-    //       secretKey
-    //     ).toString();
+        return {
+          // "Content-Type": "multipart/form-data",
+          encryptedHeaders,
+        };
+      },
+    });
 
-    //     return {
-    //       // "Content-Type": "multipart/form-data",
-    //       encryptedHeaders,
-    //     };
-    //   },
-    // });
-    uppy.on("file-added", () => {});
+    uppy.on("file-added", (file) => {
+      fetchRandomData().then((data) => {
+        file.data.customeNewName = data;
+        uppyInstance.addFile({
+          type: file.type,
+          data: file.data,
+          ...file,
+        });
+      });
+    });
     uppy.on("file-removed", () => {});
-    uppy.once("complete", () => {});
+    uppy.on("complete", () => {
+      uppyInstance.getFiles().map((file) => {
+        uppyInstance.removeFile(file.id);
+      });
+    });
 
     setUppyInstance(uppy);
     return () => {

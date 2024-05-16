@@ -54,6 +54,7 @@ function LoginComponetForm() {
         setUser(res.data.userLogin.data[0]);
         localStorage.setItem("token", res.data.userLogin.token);
         successMessage("Login success");
+        window.location = "/";
       }
     } catch (error) {
       errorMessage("Username or password incorrect");
