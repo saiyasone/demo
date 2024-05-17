@@ -41,12 +41,12 @@ function UppyPackage() {
       await dataFile.map(async (file) => {
         const extension = file?.name?.lastIndexOf(".");
         const fileExtension = file.name?.slice(extension);
-
+        console.log(file.data);
         if (uppyInstance) {
           let result = await uploadFileAction({
             variables: {
               data: {
-                newFilename: `${file.data.customeNewName}${fileExtension}`,
+                newFilename: `${file.data?.customeNewName}${fileExtension}`,
                 filename: file.name,
                 fileType: file.type,
                 size: file.size.toString(),
@@ -79,6 +79,7 @@ function UppyPackage() {
           id: "upload-file-id",
           restrictions: {},
           autoProceed: false,
+          allowMultipleUploadBatches: true,
         });
         uppy.use(Webcam);
         uppy.use(GoogleDrive, {
@@ -120,7 +121,7 @@ function UppyPackage() {
               STORAGE_ZONE_NAME: "beta-vshare",
               ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
               PATH: "6722542899692-114",
-              FILENAME: `${file.data.customeNewName}${fileExtension}`,
+              FILENAME: `${file.data?.customeNewName}${fileExtension}`,
               PATH_FOR_THUMBNAIL: "6722542899692-114",
             };
             const encryptedHeaders = CryptoJS.AES.encrypt(
@@ -136,14 +137,16 @@ function UppyPackage() {
         });
 
         uppy.on("file-added", (file) => {
-          fetchRandomData().then((data) => {
-            file.data.customeNewName = data;
-            uppyInstance.addFile({
-              type: file.type,
-              data: file.data,
-              ...file,
+          try {
+            fetchRandomData().then((data) => {
+              file.data.customeNewName = data;
+              uppyInstance.addFile({
+                type: file.type,
+                data: file.data,
+                ...file,
+              });
             });
-          });
+          } catch (error) {}
         });
         uppy.on("file-removed", () => {});
         uppy.on("complete", () => {});
