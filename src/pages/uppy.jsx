@@ -73,88 +73,89 @@ function UppyPackage() {
   }
 
   useEffect(() => {
-    const uppy = new Uppy({
-      id: "upload-file-id",
-      restrictions: {},
-      autoProceed: false,
-    });
-    uppy.use(Webcam);
-    uppy.use(GoogleDrive, {
-      companionUrl,
-    });
-    uppy.use(ImageEditor, {
-      quality: 0.7,
-      cropperOptions: {
-        viewMode: 1,
-        background: false,
-        center: true,
-        responsive: true,
-      },
-    });
-    uppy.use(Dropbox, {
-      companionUrl,
-      title: "Dropbox",
-    });
-    uppy.use(Instagram, {
-      companionUrl,
-    });
-
-    uppy.use(Url, {
-      companionUrl,
-    });
-    uppy.use(xhrUpload, {
-      endpoint: "https://load.vshare.net/upload",
-      formData: true,
-      method: "POST",
-      fieldName: "file",
-      headers: (file) => {
-        const extension = file?.name?.lastIndexOf(".");
-        const fileExtension = file.name?.slice(extension);
-
-        const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
-        const headers = {
-          REGION: "sg",
-          BASE_HOSTNAME: "storage.bunnycdn.com",
-          STORAGE_ZONE_NAME: "beta-vshare",
-          ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
-          PATH: "6722542899692-114",
-          FILENAME: `${file.data.customeNewName}${fileExtension}`,
-          PATH_FOR_THUMBNAIL: "6722542899692-114",
-        };
-        const encryptedHeaders = CryptoJS.AES.encrypt(
-          JSON.stringify(headers),
-          secretKey
-        ).toString();
-
-        return {
-          // "Content-Type": "multipart/form-data",
-          encryptedHeaders,
-        };
-      },
-    });
-
-    uppy.on("file-added", (file) => {
-      fetchRandomData().then((data) => {
-        file.data.customeNewName = data;
-        uppyInstance.addFile({
-          type: file.type,
-          data: file.data,
-          ...file,
+    const initializeUppy = () => {
+      try {
+        const uppy = new Uppy({
+          id: "upload-file-id",
+          restrictions: {},
+          autoProceed: false,
         });
-      });
-    });
-    uppy.on("file-removed", () => {});
-    uppy.on("complete", () => {
-      const files = uppy.getFiles();
-      files.forEach((file) => {
-        uppy.removeFile(file.id);
-      });
-    });
+        uppy.use(Webcam);
+        uppy.use(GoogleDrive, {
+          companionUrl,
+        });
+        uppy.use(ImageEditor, {
+          quality: 0.7,
+          cropperOptions: {
+            viewMode: 1,
+            background: false,
+            center: true,
+            responsive: true,
+          },
+        });
+        uppy.use(Dropbox, {
+          companionUrl,
+          title: "Dropbox",
+        });
+        uppy.use(Instagram, {
+          companionUrl,
+        });
 
-    setUppyInstance(uppy);
-    return () => {
-      uppy.close();
+        uppy.use(Url, {
+          companionUrl,
+        });
+        uppy.use(xhrUpload, {
+          endpoint: "https://load.vshare.net/upload",
+          formData: true,
+          method: "POST",
+          fieldName: "file",
+          headers: (file) => {
+            const extension = file?.name?.lastIndexOf(".");
+            const fileExtension = file.name?.slice(extension);
+
+            const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
+            const headers = {
+              REGION: "sg",
+              BASE_HOSTNAME: "storage.bunnycdn.com",
+              STORAGE_ZONE_NAME: "beta-vshare",
+              ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+              PATH: "6722542899692-114",
+              FILENAME: `${file.data.customeNewName}${fileExtension}`,
+              PATH_FOR_THUMBNAIL: "6722542899692-114",
+            };
+            const encryptedHeaders = CryptoJS.AES.encrypt(
+              JSON.stringify(headers),
+              secretKey
+            ).toString();
+
+            return {
+              // "Content-Type": "multipart/form-data",
+              encryptedHeaders,
+            };
+          },
+        });
+
+        uppy.on("file-added", (file) => {
+          fetchRandomData().then((data) => {
+            file.data.customeNewName = data;
+            uppyInstance.addFile({
+              type: file.type,
+              data: file.data,
+              ...file,
+            });
+          });
+        });
+        uppy.on("file-removed", () => {});
+        uppy.on("complete", () => {});
+
+        setUppyInstance(uppy);
+        return () => {
+          uppy.close();
+        };
+      } catch (error) {}
     };
+
+    initializeUppy();
   }, []);
 
   return (
