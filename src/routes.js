@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import IsAuthenticated from "./guards/isAuthenticate";
 import Home from "./pages/home";
 import Login from "./pages/login";
 import Contact from "./pages/contact";
@@ -9,7 +10,11 @@ import UploadFile from "./pages/upload";
 const routers = createBrowserRouter([
   {
     path: "",
-    element: <UppyPackage />,
+    element: (
+      <IsAuthenticated>
+        <UppyPackage />
+      </IsAuthenticated>
+    ),
   },
   {
     path: "/home",
@@ -17,7 +22,11 @@ const routers = createBrowserRouter([
   },
   {
     path: "/upload",
-    element: <UploadFile />,
+    element: (
+      <IsAuthenticated>
+        <UploadFile />,
+      </IsAuthenticated>
+    ),
   },
   {
     path: "/login",

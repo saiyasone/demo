@@ -145,8 +145,9 @@ function UppyPackage() {
     });
     uppy.on("file-removed", () => {});
     uppy.on("complete", () => {
-      uppyInstance.getFiles().map((file) => {
-        uppyInstance.removeFile(file.id);
+      const files = uppy.getFiles();
+      files.forEach((file) => {
+        uppy.removeFile(file.id);
       });
     });
 
@@ -173,7 +174,16 @@ function UppyPackage() {
             <Dashboard
               uppy={uppyInstance}
               showProgressDetails={true}
-              plugins={["Webcam", "GoogleDrive", "Dropbox", "Instagram", "Url"]}
+              plugins={[
+                "Webcam",
+                "GoogleDrive",
+                "Dropbox",
+                "Instagram",
+                "Url",
+                "PauseResumeButton",
+              ]}
+              hideUploadButton={true}
+              proudlyDisplayPoweredByUppy={false}
             />
           </Fragment>
         )}

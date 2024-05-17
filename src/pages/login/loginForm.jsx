@@ -57,7 +57,8 @@ function LoginComponetForm() {
         window.location = "/";
       }
     } catch (error) {
-      errorMessage("Username or password incorrect");
+      let cutErr = error.message.replace(/(ApolloError: )?Error: /, "");
+      errorMessage(cutErr);
     }
   }
 
