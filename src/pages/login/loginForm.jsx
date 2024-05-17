@@ -1,14 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { MUTATE_LOGIN_USER, QUERY_FILES } from "../../apollo/login";
-import {
-  Box,
-  Button,
-  Container,
-  OutlinedInput,
-  Typography,
-  styled,
-} from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -17,10 +10,8 @@ import { errorMessage, successMessage } from "../../components/messageAlert";
 import { ToastContainer } from "react-toastify";
 
 function LoginComponetForm() {
-  const [getFile, { data: get_file }] = useLazyQuery(QUERY_FILES);
+  const [getFile] = useLazyQuery(QUERY_FILES);
   const [userLogin, { data: user_login }] = useMutation(MUTATE_LOGIN_USER);
-  const [user, setUser] = useState({});
-  const [token, setToken] = useState("");
 
   const formSchema = yup.object({
     username: yup.string().required("Username is required"),
@@ -50,8 +41,6 @@ function LoginComponetForm() {
       });
 
       if (res?.data?.userLogin) {
-        setToken(res.data.userLogin.token);
-        setUser(res.data.userLogin.data[0]);
         localStorage.setItem("token", res.data.userLogin.token);
         successMessage("Login success");
         window.location = "/";

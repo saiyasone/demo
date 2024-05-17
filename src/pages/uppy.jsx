@@ -41,7 +41,7 @@ function UppyPackage() {
       await dataFile.map(async (file) => {
         const extension = file?.name?.lastIndexOf(".");
         const fileExtension = file.name?.slice(extension);
-        console.log(file.data);
+
         if (uppyInstance) {
           let result = await uploadFileAction({
             variables: {
