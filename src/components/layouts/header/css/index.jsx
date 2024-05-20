@@ -1,4 +1,5 @@
-import { Box, Container, styled } from "@mui/material";
+import { Box, Container, createTheme, styled } from "@mui/material";
+const theme = createTheme();
 
 export const HeaderContainer = styled(Container)({});
 
@@ -7,6 +8,10 @@ export const HeaderNav = styled(Box)({
   alignItems: "center",
   justifyContent: "space-between",
   padding: "1rem 0",
+
+  [theme.breakpoints.down(763)]: {
+    display: "none",
+  },
 
   img: {
     width: "40px",

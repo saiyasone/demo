@@ -15,3 +15,45 @@ code {
 .uppy-Dashboard-upload {
   display: none;
 }
+
+/* uppy-custom.css */
+
+.uppy-Dashboard-inner {
+  background-color: #fff;
+  border: none;
+}
+.uppy-Dashboard-AddFiles {
+  border: none !important;
+}
+.uppy-Dashboard-AddFiles-title {
+  color: #dcdcdc;
+  font-weight: 300;
+}
+.uppy-DashboardContent-title {
+  color: #17766B;
+}
+
+/* Add more files */
+.uppy-DashboardContent-addMore{
+  /* display: none !important; */
+}
+.uppy-DashboardContent-addMore:focus {
+  background-color: #ccc;
+}
+
+/* Customize buttons */
+.uppy-c-btn {
+  /* background-color: #007bff; 
+  color: white;
+  border-radius: 4px; */
+}
+
+/* Hover effect for buttons */
+.uppy-c-btn:hover {
+  /* background-color: #0056b3; */
+}
+
+/* Customize progress bar */
+.uppy-StatusBar-progress {
+  background-color: #28a745; /* Change progress bar color */
+}

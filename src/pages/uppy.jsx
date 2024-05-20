@@ -16,7 +16,6 @@ import Url from "@uppy/url";
 import Webcam from "@uppy/webcam";
 import ImageEditor from "@uppy/image-editor";
 import AudioFile from "@uppy/audio";
-import ProgressBar from "@uppy/progress-bar";
 import ThumbnailGenerator from "@uppy/thumbnail-generator";
 import Tus from "@uppy/tus";
 
@@ -50,6 +49,7 @@ function UppyPackage() {
         const newFile = new File([blob], file.name, { type: file.type });
         formData.append("file", newFile);
         await uppyInstance.upload();
+
         // const extension = file?.name?.lastIndexOf(".");
         // const fileExtension = file.name?.slice(extension);
 
@@ -89,6 +89,8 @@ function UppyPackage() {
     }
   }
 
+  function handleAddmore() {}
+
   useEffect(() => {
     const initializeUppy = () => {
       try {
@@ -99,17 +101,38 @@ function UppyPackage() {
           allowMultipleUploadBatches: true,
         });
         uppy.use(Webcam);
-        // uppy.use(Tus, {
-        //   endpoint: "https://load.vshare.net/upload",
-        // });
+        uppy.use(Tus, {
+          endpoint: "https://load.vshare.net/upload",
+          headers: (file) => {
+            const extension = file?.name?.lastIndexOf(".");
+            const fileExtension = file.name?.slice(extension);
+
+            const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
+            const headers = {
+              REGION: "sg",
+              BASE_HOSTNAME: "storage.bunnycdn.com",
+              STORAGE_ZONE_NAME: "beta-vshare",
+              ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+              PATH: "6722542899692-114",
+              FILENAME: `${file.data?.customeNewName}${fileExtension}`,
+              PATH_FOR_THUMBNAIL: "6722542899692-114",
+            };
+            const encryptedHeaders = CryptoJS.AES.encrypt(
+              JSON.stringify(headers),
+              secretKey
+            ).toString();
+
+            return {
+              // "Content-Type": "multipart/form-data",
+              encryptedHeaders,
+            };
+          },
+        });
         uppy.use(ThumbnailGenerator, {
           thumbnailWidth: 200,
           thumbnailHeight: 200,
         });
         uppy.use(FileInput, {});
-        uppy.use(ProgressBar, {
-          fixed: true,
-        });
         uppy.use(GoogleDrive, {
           companionUrl,
         });
@@ -144,46 +167,41 @@ function UppyPackage() {
         uppy.use(Url, {
           companionUrl,
         });
-        uppy.use(xhrUpload, {
-          endpoint: "https://load.vshare.net/upload",
-          formData: true,
-          method: "POST",
-          fieldName: "file",
-          headers: (file) => {
-            const extension = file?.name?.lastIndexOf(".");
-            const fileExtension = file.name?.slice(extension);
+        // uppy.use(xhrUpload, {
+        //   endpoint: "https://load.vshare.net/upload",
+        //   formData: true,
+        //   method: "POST",
+        //   fieldName: "file",
+        //   headers: (file) => {
+        //     const extension = file?.name?.lastIndexOf(".");
+        //     const fileExtension = file.name?.slice(extension);
 
-            const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
-            const headers = {
-              REGION: "sg",
-              BASE_HOSTNAME: "storage.bunnycdn.com",
-              STORAGE_ZONE_NAME: "beta-vshare",
-              ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
-              PATH: "6722542899692-114",
-              FILENAME: `${file.data?.customeNewName}${fileExtension}`,
-              PATH_FOR_THUMBNAIL: "6722542899692-114",
-            };
-            const encryptedHeaders = CryptoJS.AES.encrypt(
-              JSON.stringify(headers),
-              secretKey
-            ).toString();
+        //     const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
+        //     const headers = {
+        //       REGION: "sg",
+        //       BASE_HOSTNAME: "storage.bunnycdn.com",
+        //       STORAGE_ZONE_NAME: "beta-vshare",
+        //       ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+        //       PATH: "6722542899692-114",
+        //       FILENAME: `${file.data?.customeNewName}${fileExtension}`,
+        //       PATH_FOR_THUMBNAIL: "6722542899692-114",
+        //     };
+        //     const encryptedHeaders = CryptoJS.AES.encrypt(
+        //       JSON.stringify(headers),
+        //       secretKey
+        //     ).toString();
 
-            return {
-              // "Content-Type": "multipart/form-data",
-              encryptedHeaders,
-            };
-          },
-        });
+        //     return {
+        //       // "Content-Type": "multipart/form-data",
+        //       encryptedHeaders,
+        //     };
+        //   },
+        // });
 
         uppy.on("file-added", (file) => {
           try {
             fetchRandomData().then((data) => {
               file.data.customeNewName = data;
-              uppyInstance.addFile({
-                type: file.type,
-                data: file.data,
-                ...file,
-              });
             });
           } catch (error) {}
         });
@@ -211,12 +229,24 @@ function UppyPackage() {
           <Button onClick={handleUpload} variant="contained">
             Upload
           </Button>
+          <Button onClick={handleAddmore} variant="contained">
+            Add more
+          </Button>
         </Box>
         {uppyInstance && (
           <Fragment>
             <Dashboard
               uppy={uppyInstance}
+              width={`${100}%`}
               showProgressDetails={true}
+              locale={{
+                strings: {
+                  addMore: "Add nigga",
+                  cancel: "Cancel nigga",
+                  dropPaste: "Hello files",
+                  browse: "browse",
+                },
+              }}
               plugins={[
                 "Webcam",
                 "GoogleDrive",
