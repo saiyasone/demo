@@ -101,33 +101,46 @@ function UppyPackage() {
           allowMultipleUploadBatches: true,
         });
         uppy.use(Webcam);
-        uppy.use(Tus, {
-          endpoint: "https://load.vshare.net/upload",
-          headers: (file) => {
-            const extension = file?.name?.lastIndexOf(".");
-            const fileExtension = file.name?.slice(extension);
+        // uppy.use(Tus, {
+        //   endpoint: "https://load.vshare.net/upload",
+        //   headers: (file) => {
+        //     const extension = file?.name?.lastIndexOf(".");
+        //     const fileExtension = file.name?.slice(extension);
 
-            const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
-            const headers = {
-              REGION: "sg",
-              BASE_HOSTNAME: "storage.bunnycdn.com",
-              STORAGE_ZONE_NAME: "beta-vshare",
-              ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
-              PATH: "6722542899692-114",
-              FILENAME: `${file.data?.customeNewName}${fileExtension}`,
-              PATH_FOR_THUMBNAIL: "6722542899692-114",
-            };
-            const encryptedHeaders = CryptoJS.AES.encrypt(
-              JSON.stringify(headers),
-              secretKey
-            ).toString();
+        //     const secretKey = "jsje3j3,02.3j2jk";
+        //     const headers = {
+        //       REGION: "sg",
+        //       BASE_HOSTNAME: "storage.bunnycdn.com",
+        //       STORAGE_ZONE_NAME: "beta-vshare",
+        //       ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+        //       PATH: "6722542899692-114",
+        //       FILENAME: `${file.data?.customeNewName}${fileExtension}`,
+        //       PATH_FOR_THUMBNAIL: "6722542899692-114",
+        //     };
 
-            return {
-              // "Content-Type": "multipart/form-data",
-              encryptedHeaders,
-            };
-          },
-        });
+        //     const key = CryptoJS.enc.Utf8.parse(secretKey);
+        //     const iv = CryptoJS.lib.WordArray.random(16);
+        //     const encrypted = CryptoJS.AES.encrypt(
+        //       JSON.stringify(headers),
+        //       key,
+        //       {
+        //         iv: iv,
+        //         mode: CryptoJS.mode.CBC,
+        //         padding: CryptoJS.pad.Pkcs7,
+        //       }
+        //     );
+        //     const cipherText = encrypted.ciphertext.toString(
+        //       CryptoJS.enc.Base64
+        //     );
+        //     const ivText = iv.toString(CryptoJS.enc.Base64);
+        //     const encryptedData = cipherText + ":" + ivText;
+
+        //     return {
+        //       // "Content-Type": "multipart/form-data",
+        //       encryptedHeaders: encryptedData,
+        //     };
+        //   },
+        // });
         uppy.use(ThumbnailGenerator, {
           thumbnailWidth: 200,
           thumbnailHeight: 200,
@@ -167,36 +180,50 @@ function UppyPackage() {
         uppy.use(Url, {
           companionUrl,
         });
-        // uppy.use(xhrUpload, {
-        //   endpoint: "https://load.vshare.net/upload",
-        //   formData: true,
-        //   method: "POST",
-        //   fieldName: "file",
-        //   headers: (file) => {
-        //     const extension = file?.name?.lastIndexOf(".");
-        //     const fileExtension = file.name?.slice(extension);
 
-        //     const secretKey = "jsje3j3,02.3j2jk=243j42lj34hj23l24l;2h5345l";
-        //     const headers = {
-        //       REGION: "sg",
-        //       BASE_HOSTNAME: "storage.bunnycdn.com",
-        //       STORAGE_ZONE_NAME: "beta-vshare",
-        //       ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
-        //       PATH: "6722542899692-114",
-        //       FILENAME: `${file.data?.customeNewName}${fileExtension}`,
-        //       PATH_FOR_THUMBNAIL: "6722542899692-114",
-        //     };
-        //     const encryptedHeaders = CryptoJS.AES.encrypt(
-        //       JSON.stringify(headers),
-        //       secretKey
-        //     ).toString();
+        uppy.use(xhrUpload, {
+          endpoint: "https://coding.load.vshare.net/upload",
+          formData: true,
+          method: "POST",
+          fieldName: "file",
+          headers: (file) => {
+            const extension = file?.name?.lastIndexOf(".");
+            const fileExtension = file.name?.slice(extension);
 
-        //     return {
-        //       // "Content-Type": "multipart/form-data",
-        //       encryptedHeaders,
-        //     };
-        //   },
-        // });
+            const secretKey = "jsje3j3,02.3j2jk";
+            const headers = {
+              REGION: "sg",
+              BASE_HOSTNAME: "storage.bunnycdn.com",
+              STORAGE_ZONE_NAME: "beta-vshare",
+              ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+              PATH: "6722542899692-114",
+              FILENAME: `${file.data?.customeNewName}${fileExtension}`,
+              PATH_FOR_THUMBNAIL: "6722542899692-114",
+            };
+
+            const key = CryptoJS.enc.Utf8.parse(secretKey);
+            const iv = CryptoJS.lib.WordArray.random(16);
+            const encrypted = CryptoJS.AES.encrypt(
+              JSON.stringify(headers),
+              key,
+              {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+              }
+            );
+            const cipherText = encrypted.ciphertext.toString(
+              CryptoJS.enc.Base64
+            );
+            const ivText = iv.toString(CryptoJS.enc.Base64);
+            const encryptedData = cipherText + ":" + ivText;
+
+            return {
+              // "Content-Type": "multipart/form-data",
+              encryptedHeaders: encryptedData,
+            };
+          },
+        });
 
         uppy.on("file-added", (file) => {
           try {
