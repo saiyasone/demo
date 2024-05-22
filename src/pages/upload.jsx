@@ -1,18 +1,40 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
 import { Box, Button } from "@mui/material";
 import axios from "axios";
 import Header from "../components/layouts/header";
 import { UPLOAD_FILE } from "../apollo/upload";
 import { useMutation } from "@apollo/client";
+import { Uppy } from "@uppy/core";
+import { DragDrop } from "@uppy/react";
+import XHRUpload from "@uppy/xhr-upload";
+import "@uppy/core/dist/style.css";
+import "@uppy/drag-drop/dist/style.css";
+import { ReactComponent as IconMyfolerFull } from "./../images/FolderIcon.svg";
+
+const MyfolderFull = () => {
+  return <IconMyfolerFull />;
+};
 
 function UploadFile() {
   const [fileData, setFileData] = useState([]);
+  const [folderData, setFolderData] = useState([]);
   const [uploadFileAction] = useMutation(UPLOAD_FILE);
+  const [uppyInstance, setUppyInstance] = useState(new Uppy());
 
   function handleFile(event) {
     const { files } = event.target;
     setFileData(Array.from(files));
+  }
+
+  function handleFolder(evt) {
+    const { files } = evt.target;
+    const folders = Array.from(files).filter((file) =>
+      file.webkitRelativePath.includes("/")
+    );
+    setFolderData((prev) => {
+      return [...prev, ...folders];
+    });
   }
 
   async function handleUpload() {
@@ -82,23 +104,91 @@ function UploadFile() {
     }
   }
 
+  useEffect(() => {
+    try {
+      const uppy = new Uppy({
+        allowMultipleUploadBatches: true,
+        restrictions: {},
+        allowedFileTypes: null, // Accept all file types
+      });
+
+      uppy.use(DragDrop, {});
+      uppy.use(XHRUpload, {
+        endpoint: "https://coding.load.vshare.net/upload",
+      });
+
+      return () => {
+        uppy.close();
+      };
+    } catch (error) {}
+  }, []);
+
   return (
     <Fragment>
       <Header />
       <Box sx={{ my: 2, mx: 2 }}>
         <h2>UploadFile</h2>
 
-        <input type="file" multiple={true} onChange={handleFile} />
+        {/* <input
+          directory=""
+          type="file"
+          webkitdirectory=""
+          mozdirectory="true"
+          multiple={true}
+          onChange={handleFile}
+        /> */}
+
+        <input
+          type="file"
+          style={{ display: "block" }}
+          webkitdirectory="true"
+          directory="true"
+          multiple={false}
+          onChange={handleFolder}
+        />
 
         <Button variant="contained" onClick={handleUpload}>
           Upload
         </Button>
 
         <Box sx={{ mt: 3 }}>
-          <ul>
-            {fileData.map((file, index) => {
+          <ul
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr repeat(3, 1fr)",
+            }}
+          >
+            {/* {fileData.map((file, index) => {
               return <li key={index}>{file.name}</li>;
-            })}
+            })} */}
+            {[
+              ...new Set(
+                folderData.map(
+                  (folder) => folder.webkitRelativePath.split("/")[0]
+                )
+              ),
+            ].map((folderPath, index) => (
+              <li key={index} style={{ listStyle: "none" }}>
+                <div style={{ position: "relative" }}>
+                  <MyfolderFull />
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "0",
+                      left: "0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <div style={{}}>
+                      <p>1/{folderData.length}</p>
+                      <span> {JSON.stringify(folderPath)}</span>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
           </ul>
         </Box>
       </Box>

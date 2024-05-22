@@ -16,26 +16,81 @@ code {
   display: none;
 }
 
-/* uppy-custom.css */
-
+/* =========== uppy-custom.css ========== */
 .uppy-Dashboard-inner {
   background-color: #fff;
   border: none;
 }
 .uppy-Dashboard-AddFiles {
   border: none !important;
+  /* display: none; */
 }
 .uppy-Dashboard-AddFiles-title {
-  color: #dcdcdc;
-  font-weight: 300;
+  color: #4b465c;
+  font-weight: 600;
+}
+.uppy-DashboardContent-back {
+  color: #4b465c;
+  font-weight: 600;
 }
 .uppy-DashboardContent-title {
-  color: #17766B;
+  color: #4b465c;
+}
+.uppy-Dashboard-browse {
+  color: #17766b;
+  text-decoration: none;
+}
+.uppy-Dashboard-browse:hover {
+  text-decoration: underline #17766b;
+}
+
+/* Icons in select upload files */
+.uppy-DashboardTab-name {
+  font-weight: 600;
+  color: #4b465c;
+}
+.uppy-DashboardTab-iconMyDevice {
+  color: #17766b;
+  font-weight: 600;
+}
+.uppy-DashboardTab-inner {
+  color: #17766b;
+  background-color: #eee;
+  width: 38px;
+  height: 38px;
+}
+
+/* button action when upload files */
+.uppy-DashboardTab-btn {
+}
+.uppy-DashboardTab-btn:hover {
+  /* background-color: transparent !important; */
+}
+.uppy-DashboardTab-btn:active {
+  /* background-color: transparent !important; */
+}
+
+/* Icon for edit */
+.uppy-c-icon {
+  width: 20px;
+  height: 20px;
+}
+[dir="ltr"] .uppy-size--md .uppy-Dashboard-Item-action--remove {
+  right: 10px;
+}
+.uppy-size--md .uppy-Dashboard-Item-action--remove {
+  top: 8px;
 }
 
 /* Add more files */
-.uppy-DashboardContent-addMore{
-  /* display: none !important; */
+.uppy-DashboardContent-addMore {
+  color: #17766b;
+}
+.uppy-DashboardContent-addMore:hover {
+  color: #17766b;
+}
+.uppy-DashboardContent-addMore > .uppy-c-icon {
+  color: #17766b;
 }
 .uppy-DashboardContent-addMore:focus {
   background-color: #ccc;
@@ -53,7 +108,152 @@ code {
   /* background-color: #0056b3; */
 }
 
-/* Customize progress bar */
+/* Drag and  Drop */
+.uppy-Dashboard--dragover {
+  border: 3px dashed #4caf50;
+  background-color: #f0f8ff;
+}
+.uppy-Dashboard-dropFilesHereHint {
+  /* visibility: visible; */
+  border: 3px dashed #4caf50;
+  background-image: url("../public/icons/Group\ 1321318025.png");
+  background-size: 60px;
+  background-position: center center;
+  font-weight: 600;
+  font-size: 18px;
+  background-color: #f0f0f0;
+}
+
+/* Header */
+.uppy-DashboardContent-bar {
+  background-color: #f5f5f5;
+  border-bottom: none;
+}
+.uppy-ProviderBrowser-headerBar {
+  background-color: #f5f5f5;
+  border-bottom: none;
+}
+.uppy-size--md .uppy-ProviderBrowser-headerBar {
+  margin-top: 0.4rem;
+}
+
+/* Uppy icon for reset file and edit file */
+.uppy-u-reset > .uppy-c-icon {
+  color: #4b465c;
+}
+.uppy-ProviderBrowser-userLogout {
+  color: #17766b;
+}
+.uppy-size--md .uppy-DashboardContent-back,
+.uppy-size--md .uppy-DashboardContent-save {
+  color: #17766b;
+}
+.uppy-ProviderBrowser-userLogout:hover {
+  text-decoration: underline #17766b;
+}
+
+/* Uppy preview image */
+.uppy-Dashboard-Item-previewInnerWrap {
+  border-radius: 10px !important;
+}
+.uppy-Dashboard-Item-preview img.uppy-Dashboard-Item-previewImg {
+  border-radius: 10px !important;
+}
+
+/* File Panel from social media */
+.uppy-Dashboard-AddFilesPanel,
+.uppy-DashboardContent-panel {
+  background-color: #fff;
+}
+
+/* Uppy import link */
+.uppy-Url {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+.uppy-Url-importButton {
+  background-color: #17766b;
+  padding: 12px inherit;
+}
+.uppy-Url-importButton:focus {
+  box-shadow: none;
+}
+.uppy-Url-importButton:hover {
+  background-color: #10524a;
+}
+.uppy-c-textInput:focus {
+  border-color: #17766b;
+  box-shadow: none;
+}
+
+/* Camera Icon in camera module */
+/* Override the styles for the camera icon */
+.uppy-Webcam-permissonsIcon > * {
+  fill: #17766b;
+}
+
+/* Uppy loading progressbar */
+.uppy-StatusBar::before {
+  height: 4px;
+}
 .uppy-StatusBar-progress {
-  background-color: #28a745; /* Change progress bar color */
+  background-color: #17766b;
+  height: 4px;
+}
+.uppy-size--md .uppy-Dashboard-Item-progressIndicator {
+  width: 45px;
+  height: 45px;
+}
+.uppy-DashboardItem .uppy-StatusBar.is-complete .uppy-StatusBar-actions {
+  background-color: #17766b; /* Custom background color for the success icon */
+  color: white; /* Custom text color */
+}
+.uppy-size--md .uppy-Dashboard-Item-progressIndicator:focus {
+  color: #17766b;
+}
+.uppy-size--md .uppy-Dashboard-Item-progressIndicator > .uppy-c-icon {
+  width: 60px;
+  height: 60px;
+  color: #fff;
+}
+.uppy-StatusBar-statusPrimary {
+  line-height: 1.6;
+  font-size: 12px;
+}
+.uppy-StatusBar-statusSecondary {
+  color: #4b465c;
+  font-size: 12px;
+  font-weight: 600;
+}
+.uppy-StatusBar.is-complete .uppy-StatusBar-statusCompleteIcon {
+  fill: #17766b !important;
+}
+.upload-error .uppy-StatusBar-progress {
+  background-color: red !important;
+}
+
+/* Spinner */
+.uppy-StatusBar-spinner {
+  fill: #10524a;
+}
+
+/* responsive for progressbar */
+.uppy-size--md
+  .uppy-Dashboard-Item.is-complete
+  .uppy-Dashboard-Item-progressIndicator {
+  width: 35px !important;
+  height: 35px !important;
+}
+[dir="ltr"]
+  .uppy-size--md
+  .uppy-Dashboard-Item.is-complete
+  .uppy-Dashboard-Item-progress {
+  right: 43%;
+}
+[dir="ltr"]
+  .uppy-size--md
+  .uppy-Dashboard-Item.is-complete
+  .uppy-Dashboard-Item-progress {
+  top: 35%;
 }

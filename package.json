@@ -18,6 +18,7 @@
     "@uppy/aws-s3-multipart": "^3.11.1",
     "@uppy/core": "^3.11.2",
     "@uppy/dashboard": "^3.8.3",
+    "@uppy/drag-drop": "^3.1.0",
     "@uppy/dropbox": "^3.3.1",
     "@uppy/file-input": "^3.1.2",
     "@uppy/form": "^3.2.1",

@@ -18,6 +18,7 @@ import ImageEditor from "@uppy/image-editor";
 import AudioFile from "@uppy/audio";
 import ThumbnailGenerator from "@uppy/thumbnail-generator";
 import Tus from "@uppy/tus";
+import AwsS3Multipart from "@uppy/aws-s3-multipart";
 
 import "@uppy/core/dist/style.min.css";
 import "@uppy/core/dist/style.css";
@@ -43,53 +44,51 @@ function UppyPackage() {
       const dataFile = uppyInstance.getFiles();
 
       await dataFile.map(async (file) => {
-        const blob = new Blob([file], {
-          type: file.type,
-        });
-        const newFile = new File([blob], file.name, { type: file.type });
-        formData.append("file", newFile);
-        await uppyInstance.upload();
+        // const blob = new Blob([file], {
+        //   type: file.type,
+        // });
+        // const newFile = new File([blob], file.name, { type: file.type });
+        // formData.append("file", newFile);
+        // await uppyInstance.upload();
 
-        // const extension = file?.name?.lastIndexOf(".");
-        // const fileExtension = file.name?.slice(extension);
+        const extension = file?.name?.lastIndexOf(".");
+        const fileExtension = file.name?.slice(extension);
 
-        // if (uppyInstance) {
-        //   const blob = new Blob([file], {
-        //     type: file.type,
-        //   });
-        //   const newFile = new File([blob], file.name, { type: file.type });
-        //   formData.append("file", newFile);
-        //   await uppyInstance.upload();
-        //   let result = await uploadFileAction({
-        //     variables: {
-        //       data: {
-        //         newFilename: `${file.data?.customeNewName}${fileExtension}`,
-        //         filename: file.name,
-        //         fileType: file.type,
-        //         size: file.size.toString(),
-        //         checkFile: "main",
-        //         country: null,
-        //         device: "Windows10",
-        //         totalUploadFile: dataFile.length,
-        //       },
-        //     },
-        //   });
-        //   if (result.data?.createFiles?._id) {
-        //     const blob = new Blob([file], {
-        //       type: file.type,
-        //     });
-        //     const newFile = new File([blob], file.name, { type: file.type });
-        //     formData.append("file", newFile);
-        //     await uppyInstance.upload();
-        //   }
-        // }
+        if (uppyInstance) {
+          const blob = new Blob([file], {
+            type: file.type,
+          });
+          const newFile = new File([blob], file.name, { type: file.type });
+          formData.append("file", newFile);
+          await uppyInstance.upload();
+          let result = await uploadFileAction({
+            variables: {
+              data: {
+                newFilename: `${file.data?.customeNewName}${fileExtension}`,
+                filename: file.name,
+                fileType: file.type,
+                size: file.size.toString(),
+                checkFile: "main",
+                country: null,
+                device: "Windows10",
+                totalUploadFile: dataFile.length,
+              },
+            },
+          });
+          if (result.data?.createFiles?._id) {
+            const blob = new Blob([file], {
+              type: file.type,
+            });
+            const newFile = new File([blob], file.name, { type: file.type });
+            formData.append("file", newFile);
+            await uppyInstance.upload();
+          }
+        }
       });
     } catch (error) {
       console.log(error.message);
     }
   }
-
-  function handleAddmore() {}
 
   useEffect(() => {
     const initializeUppy = () => {
@@ -99,6 +98,9 @@ function UppyPackage() {
           restrictions: {},
           autoProceed: false,
           allowMultipleUploadBatches: true,
+          meta: {
+            folder: true,
+          },
         });
         uppy.use(Webcam);
         // uppy.use(Tus, {
@@ -145,12 +147,21 @@ function UppyPackage() {
           thumbnailWidth: 200,
           thumbnailHeight: 200,
         });
-        uppy.use(FileInput, {});
+        // uppy.use(FileInput, {});
         uppy.use(GoogleDrive, {
           companionUrl,
         });
 
-        uppy.use(ScreenCapture, {});
+        // uppy.use(ScreenCapture, {});
+        // uppy.use(AwsS3Multipart, {
+        //   limit: 4,
+        //   companionUrl: "",
+        //   shouldUseMultipart(file) {
+        //     // Use multipart only for files larger than 100MiB.
+        //     return file.size > 100 * 2 ** 20;
+        //   },
+        //   createMultipartUpload: (file) => {},
+        // });
         uppy.use(AudioFile, {});
         uppy.use(ImageEditor, {
           quality: 0.7,
@@ -161,13 +172,13 @@ function UppyPackage() {
             responsive: true,
           },
         });
-        uppy.use(Dropbox, {
-          companionUrl,
-          title: "Dropbox",
-        });
-        uppy.use(Instagram, {
-          companionUrl,
-        });
+        // uppy.use(Dropbox, {
+        //   companionUrl,
+        //   title: "Dropbox",
+        // });
+        // uppy.use(Instagram, {
+        //   companionUrl,
+        // });
         // uppy.use(Transloadit, {
         //   assemblyOptions: {
         //     params: {
@@ -256,9 +267,6 @@ function UppyPackage() {
           <Button onClick={handleUpload} variant="contained">
             Upload
           </Button>
-          <Button onClick={handleAddmore} variant="contained">
-            Add more
-          </Button>
         </Box>
         {uppyInstance && (
           <Fragment>
@@ -268,10 +276,12 @@ function UppyPackage() {
               showProgressDetails={true}
               locale={{
                 strings: {
-                  addMore: "Add nigga",
-                  cancel: "Cancel nigga",
+                  addMore: "Add more",
+                  cancel: "Cancel",
                   dropPaste: "Hello files",
                   browse: "browse",
+                  browseFiles: "browse files",
+                  dropHint: "Drop your files here",
                 },
               }}
               plugins={[
