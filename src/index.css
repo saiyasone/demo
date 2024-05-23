@@ -144,6 +144,9 @@ code {
 .uppy-ProviderBrowser-userLogout {
   color: #17766b;
 }
+.uppy-ProviderBrowser-user::after {
+  content: "";
+}
 .uppy-size--md .uppy-DashboardContent-back,
 .uppy-size--md .uppy-DashboardContent-save {
   color: #17766b;
