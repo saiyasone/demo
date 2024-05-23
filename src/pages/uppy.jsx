@@ -44,46 +44,46 @@ function UppyPackage() {
       const dataFile = uppyInstance.getFiles();
 
       await dataFile.map(async (file) => {
-        // const blob = new Blob([file], {
-        //   type: file.type,
-        // });
-        // const newFile = new File([blob], file.name, { type: file.type });
-        // formData.append("file", newFile);
-        // await uppyInstance.upload();
+        const blob = new Blob([file], {
+          type: file.type,
+        });
+        const newFile = new File([blob], file.name, { type: file.type });
+        formData.append("file", newFile);
+        await uppyInstance.upload();
 
-        const extension = file?.name?.lastIndexOf(".");
-        const fileExtension = file.name?.slice(extension);
+        // const extension = file?.name?.lastIndexOf(".");
+        // const fileExtension = file.name?.slice(extension);
 
-        if (uppyInstance) {
-          const blob = new Blob([file], {
-            type: file.type,
-          });
-          const newFile = new File([blob], file.name, { type: file.type });
-          formData.append("file", newFile);
-          await uppyInstance.upload();
-          let result = await uploadFileAction({
-            variables: {
-              data: {
-                newFilename: `${file.data?.customeNewName}${fileExtension}`,
-                filename: file.name,
-                fileType: file.type,
-                size: file.size.toString(),
-                checkFile: "main",
-                country: null,
-                device: "Windows10",
-                totalUploadFile: dataFile.length,
-              },
-            },
-          });
-          if (result.data?.createFiles?._id) {
-            const blob = new Blob([file], {
-              type: file.type,
-            });
-            const newFile = new File([blob], file.name, { type: file.type });
-            formData.append("file", newFile);
-            await uppyInstance.upload();
-          }
-        }
+        // if (uppyInstance) {
+        //   const blob = new Blob([file], {
+        //     type: file.type,
+        //   });
+        //   const newFile = new File([blob], file.name, { type: file.type });
+        //   formData.append("file", newFile);
+        //   await uppyInstance.upload();
+        //   let result = await uploadFileAction({
+        //     variables: {
+        //       data: {
+        //         newFilename: `${file.data?.customeNewName}${fileExtension}`,
+        //         filename: file.name,
+        //         fileType: file.type,
+        //         size: file.size.toString(),
+        //         checkFile: "main",
+        //         country: null,
+        //         device: "Windows10",
+        //         totalUploadFile: dataFile.length,
+        //       },
+        //     },
+        //   });
+        //   if (result.data?.createFiles?._id) {
+        //     const blob = new Blob([file], {
+        //       type: file.type,
+        //     });
+        //     const newFile = new File([blob], file.name, { type: file.type });
+        //     formData.append("file", newFile);
+        //     await uppyInstance.upload();
+        //   }
+        // }
       });
     } catch (error) {
       console.log(error.message);

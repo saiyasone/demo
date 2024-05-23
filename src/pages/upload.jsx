@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import axios from "axios";
 import Header from "../components/layouts/header";
 import { UPLOAD_FILE } from "../apollo/upload";
@@ -147,49 +147,46 @@ function UploadFile() {
           onChange={handleFolder}
         />
 
-        <Button variant="contained" onClick={handleUpload}>
+        <Button variant="contained" onClick={handleUpload} sx={{ mt: 1 }}>
           Upload
         </Button>
 
         <Box sx={{ mt: 3 }}>
-          <ul
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr repeat(3, 1fr)",
-            }}
-          >
-            {/* {fileData.map((file, index) => {
-              return <li key={index}>{file.name}</li>;
-            })} */}
+          <Grid container spacing={2}>
             {[
               ...new Set(
                 folderData.map(
                   (folder) => folder.webkitRelativePath.split("/")[0]
                 )
               ),
-            ].map((folderPath, index) => (
-              <li key={index} style={{ listStyle: "none" }}>
-                <div style={{ position: "relative" }}>
-                  <MyfolderFull />
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "0",
-                      left: "0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <div style={{}}>
-                      <p>1/{folderData.length}</p>
-                      <span> {JSON.stringify(folderPath)}</span>
+            ].map((folderPath, index) => {
+              const fileInFolder = folderData.filter((folder) =>
+                String(folder.webkitRelativePath).startsWith(folderPath)
+              ).length;
+              return (
+                <Grid item xs={12} md={6} lg={4} key={index}>
+                  <div style={{ position: "relative" }}>
+                    <MyfolderFull />
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "0",
+                        left: "0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <div style={{}}>
+                        <p>1/{fileInFolder}</p>
+                        <span> {JSON.stringify(folderPath)} </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </Grid>
+              );
+            })}
+          </Grid>
         </Box>
       </Box>
     </Fragment>
