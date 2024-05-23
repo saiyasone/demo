@@ -25,6 +25,12 @@ import "@uppy/core/dist/style.css";
 import "@uppy/dashboard/dist/style.min.css";
 import "@uppy/webcam/dist/style.min.css";
 import "@uppy/image-editor/dist/style.css";
+import {
+  ButtonActionContainer,
+  ButtonCancelAction,
+  ButtonUploadAction,
+  UploadFilesContainer,
+} from "../styles/upload-style";
 
 function UppyPackage() {
   const [uploadFileAction] = useMutation(UPLOAD_FILE);
@@ -261,42 +267,47 @@ function UppyPackage() {
       <Header />
 
       <Box sx={{ my: 4, mx: 4 }}>
-        <Box mb={4} sx={{ display: "flex", gap: "1rem" }}>
-          <Typography variant="h5">UppyPackage</Typography>
+        <UploadFilesContainer>
+          <Box sx={{ display: "flex", gap: "1rem" }}>
+            <Typography variant="h5">UppyPackage</Typography>
+          </Box>
+          {uppyInstance && (
+            <Fragment>
+              <Dashboard
+                uppy={uppyInstance}
+                width={`${100}%`}
+                showProgressDetails={true}
+                locale={{
+                  strings: {
+                    addMore: "Add more",
+                    cancel: "Cancel",
+                    dropPaste: "Hello files",
+                    browse: "browse",
+                    browseFiles: "browse files",
+                    dropHint: "Drop your files here",
+                  },
+                }}
+                plugins={[
+                  "Webcam",
+                  "GoogleDrive",
+                  "Dropbox",
+                  "Instagram",
+                  "Url",
+                  "PauseResumeButton",
+                ]}
+                hideUploadButton={true}
+                proudlyDisplayPoweredByUppy={false}
+              />
 
-          <Button onClick={handleUpload} variant="contained">
-            Upload
-          </Button>
-        </Box>
-        {uppyInstance && (
-          <Fragment>
-            <Dashboard
-              uppy={uppyInstance}
-              width={`${100}%`}
-              showProgressDetails={true}
-              locale={{
-                strings: {
-                  addMore: "Add more",
-                  cancel: "Cancel",
-                  dropPaste: "Hello files",
-                  browse: "browse",
-                  browseFiles: "browse files",
-                  dropHint: "Drop your files here",
-                },
-              }}
-              plugins={[
-                "Webcam",
-                "GoogleDrive",
-                "Dropbox",
-                "Instagram",
-                "Url",
-                "PauseResumeButton",
-              ]}
-              hideUploadButton={true}
-              proudlyDisplayPoweredByUppy={false}
-            />
-          </Fragment>
-        )}
+              <ButtonActionContainer>
+                <ButtonCancelAction>Cancel</ButtonCancelAction>
+                <ButtonUploadAction onClick={handleUpload}>
+                  Upload now
+                </ButtonUploadAction>
+              </ButtonActionContainer>
+            </Fragment>
+          )}
+        </UploadFilesContainer>
       </Box>
     </Fragment>
   );
