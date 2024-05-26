@@ -6,6 +6,7 @@ import Contact from "./pages/contact";
 import Coupon from "./pages/coupon";
 import UppyPackage from "./pages/uppy";
 import UploadFile from "./pages/upload";
+import UppyManual from "./pages/uppyManual";
 
 const routers = createBrowserRouter([
   {
@@ -25,6 +26,14 @@ const routers = createBrowserRouter([
     element: (
       <IsAuthenticated>
         <UploadFile />,
+      </IsAuthenticated>
+    ),
+  },
+  {
+    path: "/progress",
+    element: (
+      <IsAuthenticated>
+        <UppyManual />,
       </IsAuthenticated>
     ),
   },

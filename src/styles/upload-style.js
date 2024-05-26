@@ -52,7 +52,7 @@ export const UploadFolderAddMoreButton = styled("button")({
 
 export const UploadFolderBody = styled("div")(({ isDrag }) => ({
   padding: "20px",
-  height: "350px",
+  // height: "350px",
   minHeight: "100%",
   overflowX: "hidden",
   overflowY: "auto",
@@ -72,7 +72,7 @@ export const ButtonActionContainer = styled("div")({
   marginTop: "1.6rem",
 
   button: {
-    fontSize: "1rem",
+    fontSize: "0.93rem",
     borderRadius: "5px",
     padding: "12px 18px",
     border: "none",

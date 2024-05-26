@@ -11,7 +11,7 @@ import axios from "axios";
 import { FaTimesCircle, FaPlus } from "react-icons/fa";
 import Header from "../components/layouts/header";
 import { UPLOAD_FILE } from "../apollo/upload";
-import { useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { Uppy } from "@uppy/core";
 import { DragDrop } from "@uppy/react";
 import XHRUpload from "@uppy/xhr-upload";
@@ -29,9 +29,26 @@ const MyfolderFull = () => {
 function UploadFile() {
   const folderRef = useRef();
   const [fileData, setFileData] = useState([]);
+  const [totalProgress, setTotalProgress] = useState(0);
   const [folderData, setFolderData] = useState([]);
-  const [uploadFileAction] = useMutation(UPLOAD_FILE);
+  const [uploadProgress, setUploadProgress] = useState({});
   const [uppyInstance, setUppyInstance] = useState(new Uppy());
+
+  // Graphql
+  const UPLOAD_FOLDER = gql`
+    mutation UploadFolder($data: UploadFolderInput!) {
+      uploadFolder(data: $data) {
+        _id
+        status
+        path {
+          newPath
+          path
+        }
+      }
+    }
+  `;
+  const [uploadFileAction] = useMutation(UPLOAD_FILE);
+  const [uploadFolderAction] = useMutation(UPLOAD_FOLDER);
 
   const onDrop = useCallback((acceptedFiles) => {
     const folderNames = new Set();
@@ -42,12 +59,30 @@ function UploadFile() {
         folderNames.add(pathSegments);
       }
 
-      folders.push({ ...{ ...file, webkitRelativePath: pathSegments } });
+      // const pathSegments = file.path;
+      // folderNames.add(pathSegments);
+
+      folders.push({
+        file,
+        webkitRelativePath: pathSegments,
+      });
+
+      const newUploadProgress = { ...uploadProgress };
+      const newFolders = [...folders];
+      const updateFolders = [...folderData, ...newFolders];
+      updateFolders.forEach((_, index) => {
+        if (!(index in newUploadProgress)) {
+          newUploadProgress[index] = 0;
+        }
+      });
+
+      setFolderData(updateFolders);
+      setUploadProgress(newUploadProgress);
     });
 
-    setFolderData((prev) => {
-      return [...prev, ...folders];
-    });
+    // setFolderData((prev) => {
+    //   return [...prev, ...folders];
+    // });
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -59,19 +94,35 @@ function UploadFile() {
 
   function handleFolder(evt) {
     const { files } = evt.target;
-    const folders = Array.from(files).filter((file) =>
-      file.webkitRelativePath.includes("/")
-    );
+    const newUploadProgress = { ...uploadProgress };
+    const folders = Array.from(files)
+      .filter((file) => String(file.webkitRelativePath).includes("/"))
+      .map((file) => ({
+        file,
+        webkitRelativePath: file.webkitRelativePath,
+      }));
 
-    setFolderData((prev) => {
-      return [...prev, ...folders];
+    const newFolders = [...folders];
+    const updateFolders = [...folderData, ...newFolders];
+    updateFolders.forEach((_, index) => {
+      if (!(index in newUploadProgress)) {
+        newUploadProgress[index] = 0;
+      }
     });
+
+    setFolderData(updateFolders);
+    setUploadProgress(newUploadProgress);
+    // setFolderData((prev) => {
+    //   return [...prev, ...folders];
+    // });
   }
 
   function lengthOfFolder() {
     return [
       ...new Set(
-        folderData.map((folder) => folder.webkitRelativePath.split("/")[0])
+        folderData.map(
+          (folder) => String(folder.webkitRelativePath).split("/")[0]
+        )
       ),
     ].length;
   }
@@ -147,40 +198,130 @@ function UploadFile() {
     folderRef.current.click();
   }
 
-  async function uploadFolder() {
-    try {
-      // const response = await axios.post(
-      //   `http://192.168.100.49:4002/api/folders`,
-      //   {
-      //     folderName: "Web Application",
-      //   }
-      // );
-      // const resData = await response.data;
-      // console.log(resData);
-      [
-        ...new Set(
-          folderData.map((folder) => folder.webkitRelativePath.split("/")[0])
-        ),
-      ].map(async (folder) => {
-        const response = await axios.post(
-          `http://192.168.100.49:4002/api/folders`,
-          {
-            folderName: folder,
-          }
-        );
-
-        const resData = await response.data;
-        console.log(resData);
-      });
-    } catch (error) {}
-  }
-
   function removeFolder(folderName) {
     setFolderData((prev) =>
       prev.filter((folder) => {
         return folder.webkitRelativePath.split("/")[0] !== folderName;
       })
     );
+  }
+
+  async function uploadFolder() {
+    try {
+      if (folderData.length > 0) {
+        for (let i = 0; i < folderData.length; i++) {
+          const newUploadProgress = {};
+          newUploadProgress[i] = 0;
+          setUploadProgress(newUploadProgress);
+        }
+
+        await handleUploadFolder();
+        // [
+        //   ...new Set(
+        //     folderData.map((folder) => folder.webkitRelativePath.split("/")[0])
+        //   ),
+        // ].map(async (folder) => {
+        //   const response = await axios.post(
+        //     `http://192.168.100.49:4002/api/folders`,
+        //     {
+        //       folderName: folder,
+        //     }
+        //   );
+
+        //   const resData = await response.data;
+        //   console.log(resData);
+        // });
+      }
+      // [
+    } catch (error) {}
+  }
+
+  async function handleUploadFolder() {
+    let uploadedSize = 0;
+    let currentUploadPercentage = 0;
+    const totalSize = folderData.reduce((acc, file) => acc + file.size, 0);
+
+    const newData = folderData.map((folder) => {
+      let pathFolder = folder.file.path || folder.file.webkitRelativePath;
+      if (pathFolder.startsWith("/")) {
+        pathFolder = pathFolder.substring(1);
+      }
+
+      return {
+        type: folder.file.type,
+        size: folder.file.size.toString(),
+        path: pathFolder,
+      };
+    });
+
+    try {
+      const folderUploadResponse = await uploadFolderAction({
+        variables: {
+          data: {
+            checkFolder: "main",
+            pathFolder: newData,
+            folder_type: "folder",
+          },
+        },
+      });
+      // if (folderUploadResponse.data?.uploadFolder.status === 200) {
+      //   const url = "https://coding.load.vshare.net/upload";
+      //   const newName = Math.floor(1111111 + Math.random() * 9999999);
+      //   const formData = new FormData();
+      //   formData.append("file", file);
+      //   const extension = file?.name?.lastIndexOf(".");
+      //   const fileExtension = file.name?.slice(extension);
+      //   const secretKey = "jsje3j3,02.3j2jk";
+      //   const headers = {
+      //     REGION: "sg",
+      //     BASE_HOSTNAME: "storage.bunnycdn.com",
+      //     STORAGE_ZONE_NAME: "beta-vshare",
+      //     ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+      //     PATH: "6722542899692-114",
+      //     FILENAME: `${newName}${fileExtension}`,
+      //     PATH_FOR_THUMBNAIL: "6722542899692-114",
+      //   };
+      //   const key = CryptoJS.enc.Utf8.parse(secretKey);
+      //   const iv = CryptoJS.lib.WordArray.random(16);
+      //   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(headers), key, {
+      //     iv: iv,
+      //     mode: CryptoJS.mode.CBC,
+      //     padding: CryptoJS.pad.Pkcs7,
+      //   });
+      //   const cipherText = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+      //   const ivText = iv.toString(CryptoJS.enc.Base64);
+      //   const encryptedData = cipherText + ":" + ivText;
+      //   const response = await axios.post(url, formData, {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //       encryptedHeaders: encryptedData,
+      //     },
+      //     onUploadProgress: (progressEvent) => {
+      //       const currentFileUploadedSize =
+      //         (progressEvent.loaded * parseInt(folderData[index].size)) /
+      //         progressEvent.total;
+      //       currentUploadPercentage = (
+      //         ((uploadedSize + currentFileUploadedSize) / totalSize) *
+      //         100
+      //       ).toFixed(0);
+      //       setTotalProgress(currentUploadPercentage);
+      //       const percentComplete = Math.round(
+      //         (progressEvent.loaded * 100) / progressEvent.total
+      //       );
+      //       setUploadProgress((prevProgress) => ({
+      //         ...prevProgress,
+      //         [index]: percentComplete,
+      //       }));
+      //     },
+      //   });
+      //   console.log(
+      //     "Reponse from upload progress update complete",
+      //     response.data
+      //   );
+      // }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
@@ -206,9 +347,8 @@ function UploadFile() {
 
   useEffect(() => {
     if (folderData.length) {
-      const folderNames = [...new Set(folderData.map((folder) => folder))];
-
-      console.log(JSON.stringify(folderNames));
+      // const folderNames = [...new Set(folderData.map((folder) => folder))];
+      // console.log(JSON.stringify(folderNames));
     }
   }, [folderData]);
 
@@ -218,19 +358,18 @@ function UploadFile() {
       <Box sx={{ my: 2, mx: 2 }}>
         <h2>UploadFile</h2>
 
-        <input directory="" type="file" onChange={handleFile} />
-
         <input
           ref={folderRef}
           type="file"
           hidden={true}
-          style={{ display: "none" }}
+          // style={{ display: "none" }}
           webkitdirectory="true"
           directory="true"
           onChange={handleFolder}
         />
+        {/* <input type="file" multiple={true} onChange={handleFile} /> */}
 
-        <Button variant="contained" onClick={handleUpload} sx={{ mt: 1 }}>
+        <Button variant="contained" onClick={handleUploadFolder} sx={{ mt: 1 }}>
           Upload
         </Button>
 
@@ -259,12 +398,14 @@ function UploadFile() {
               <MUI.UploadFolderBody>
                 <div {...getRootProps()}>
                   <div
-                  // style={{
-                  //   border: "2px dashed #0087F7",
-                  //   padding: "30px 20px",
-                  //   textAlign: "center",
-                  //   borderRadius: "5px",
-                  // }}
+                    style={{
+                      border: "2px dashed #0087F7",
+                      padding: "20px",
+                      textAlign: "center",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      outline: "none",
+                    }}
                   >
                     <input
                       {...getInputProps()}
@@ -281,7 +422,7 @@ function UploadFile() {
                     </p>
                   </div>
                 </div>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} mt={3}>
                   {[
                     ...new Set(
                       folderData.map(
@@ -292,6 +433,7 @@ function UploadFile() {
                     const fileInFolder = folderData.filter((folder) =>
                       String(folder.webkitRelativePath).startsWith(folderPath)
                     ).length;
+
                     return (
                       <Grid item xs={12} md={6} lg={3} key={index}>
                         <div

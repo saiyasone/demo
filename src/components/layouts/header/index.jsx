@@ -16,6 +16,7 @@ function Header() {
               {!!token && <NavLink to="/">Uppy</NavLink>}
               <NavLink to="/home">Home</NavLink>
               {!!token && <NavLink to="/upload">upload</NavLink>}
+              {!!token && <NavLink to="/progress">Uppy progress</NavLink>}
               <NavLink to="/contact">Contact</NavLink>
               <NavLink to="/coupon">Coupon</NavLink>
               <NavLink to="/login">Login</NavLink>

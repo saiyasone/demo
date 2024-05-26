@@ -168,7 +168,9 @@ function UppyPackage() {
         //   },
         //   createMultipartUpload: (file) => {},
         // });
-        uppy.use(AudioFile, {});
+        uppy.use(AudioFile, {
+          showAudioSourceDropdown: true,
+        });
         uppy.use(ImageEditor, {
           quality: 0.7,
           cropperOptions: {
@@ -300,7 +302,13 @@ function UppyPackage() {
               />
 
               <ButtonActionContainer>
-                <ButtonCancelAction>Cancel</ButtonCancelAction>
+                <ButtonCancelAction
+                  onClick={() => {
+                    // uppyInstance.getPlugin("Dashboard").closeModal();
+                  }}
+                >
+                  Cancel
+                </ButtonCancelAction>
                 <ButtonUploadAction onClick={handleUpload}>
                   Upload now
                 </ButtonUploadAction>
