@@ -31,6 +31,7 @@ import {
   ButtonUploadAction,
   UploadFilesContainer,
 } from "../styles/upload-style";
+import { ENV_FILE } from "../utils/env";
 
 function UppyPackage() {
   const [uploadFileAction] = useMutation(UPLOAD_FILE);
@@ -201,7 +202,7 @@ function UppyPackage() {
         });
 
         uppy.use(xhrUpload, {
-          endpoint: "https://coding.load.vshare.net/upload",
+          endpoint: ENV_FILE.REACT_APP_LOAD_UPLOAD_URL,
           formData: true,
           method: "POST",
           fieldName: "file",
@@ -209,15 +210,14 @@ function UppyPackage() {
             const extension = file?.name?.lastIndexOf(".");
             const fileExtension = file.name?.slice(extension);
 
-            const secretKey = "jsje3j3,02.3j2jk";
+            const secretKey = ENV_FILE.REACT_APP_UPLOAD_SECRET_KEY;
             const headers = {
               REGION: "sg",
               BASE_HOSTNAME: "storage.bunnycdn.com",
               STORAGE_ZONE_NAME: "beta-vshare",
-              ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+              ACCESS_KEY: ENV_FILE.REACT_APP_ACCESSKEY_BUNNY,
               PATH: "6722542899692-114",
               FILENAME: `${file.data?.customeNewName}${fileExtension}`,
-              PATH_FOR_THUMBNAIL: "6722542899692-114",
             };
 
             const key = CryptoJS.enc.Utf8.parse(secretKey);

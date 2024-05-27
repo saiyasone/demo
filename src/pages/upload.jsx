@@ -8,7 +8,7 @@ import React, {
 import CryptoJS from "crypto-js";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import axios from "axios";
-import { FaTimesCircle, FaPlus } from "react-icons/fa";
+import { FaTimesCircle, FaPlus, FaCheckCircle } from "react-icons/fa";
 import Header from "../components/layouts/header";
 import { UPLOAD_FILE } from "../apollo/upload";
 import { gql, useMutation } from "@apollo/client";
@@ -21,6 +21,10 @@ import { ReactComponent as IconMyfolerFull } from "./../images/FolderIcon.svg";
 import * as MUI from "../styles/upload-style";
 import { useDropzone } from "react-dropzone";
 import FolderIcon from "../images/FolderIcon.png";
+import {
+  CircularProgressbarWithChildren,
+  buildStyles,
+} from "react-circular-progressbar";
 
 const MyfolderFull = () => {
   return <IconMyfolerFull />;
@@ -53,32 +57,34 @@ function UploadFile() {
   const onDrop = useCallback((acceptedFiles) => {
     const folderNames = new Set();
     const folders = [];
+
+    let newUploadProgress = {};
+    let newFolders = [];
+    let updateFolders = [];
+
     acceptedFiles.forEach((file) => {
       const pathSegments = file.path?.split("/")[1];
       if (pathSegments.length > 1) {
         folderNames.add(pathSegments);
       }
 
-      // const pathSegments = file.path;
-      // folderNames.add(pathSegments);
-
       folders.push({
         file,
         webkitRelativePath: pathSegments,
       });
 
-      const newUploadProgress = { ...uploadProgress };
-      const newFolders = [...folders];
-      const updateFolders = [...folderData, ...newFolders];
+      newUploadProgress = { ...uploadProgress };
+      newFolders = [...folders];
+      updateFolders = [...folderData, ...newFolders];
       updateFolders.forEach((_, index) => {
         if (!(index in newUploadProgress)) {
           newUploadProgress[index] = 0;
         }
       });
-
-      setFolderData(updateFolders);
-      setUploadProgress(newUploadProgress);
     });
+
+    setFolderData((prev) => [...prev, ...updateFolders]);
+    setUploadProgress(newUploadProgress);
 
     // setFolderData((prev) => {
     //   return [...prev, ...folders];
@@ -244,7 +250,7 @@ function UploadFile() {
     const newData = folderData.map((folder) => {
       let pathFolder = folder.file.path || folder.file.webkitRelativePath;
       if (pathFolder.startsWith("/")) {
-        pathFolder = pathFolder.substring(1);
+        pathFolder = String(pathFolder).substring(1);
       }
 
       return {
@@ -264,61 +270,68 @@ function UploadFile() {
           },
         },
       });
-      // if (folderUploadResponse.data?.uploadFolder.status === 200) {
-      //   const url = "https://coding.load.vshare.net/upload";
-      //   const newName = Math.floor(1111111 + Math.random() * 9999999);
-      //   const formData = new FormData();
-      //   formData.append("file", file);
-      //   const extension = file?.name?.lastIndexOf(".");
-      //   const fileExtension = file.name?.slice(extension);
-      //   const secretKey = "jsje3j3,02.3j2jk";
-      //   const headers = {
-      //     REGION: "sg",
-      //     BASE_HOSTNAME: "storage.bunnycdn.com",
-      //     STORAGE_ZONE_NAME: "beta-vshare",
-      //     ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
-      //     PATH: "6722542899692-114",
-      //     FILENAME: `${newName}${fileExtension}`,
-      //     PATH_FOR_THUMBNAIL: "6722542899692-114",
-      //   };
-      //   const key = CryptoJS.enc.Utf8.parse(secretKey);
-      //   const iv = CryptoJS.lib.WordArray.random(16);
-      //   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(headers), key, {
-      //     iv: iv,
-      //     mode: CryptoJS.mode.CBC,
-      //     padding: CryptoJS.pad.Pkcs7,
-      //   });
-      //   const cipherText = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
-      //   const ivText = iv.toString(CryptoJS.enc.Base64);
-      //   const encryptedData = cipherText + ":" + ivText;
-      //   const response = await axios.post(url, formData, {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //       encryptedHeaders: encryptedData,
-      //     },
-      //     onUploadProgress: (progressEvent) => {
-      //       const currentFileUploadedSize =
-      //         (progressEvent.loaded * parseInt(folderData[index].size)) /
-      //         progressEvent.total;
-      //       currentUploadPercentage = (
-      //         ((uploadedSize + currentFileUploadedSize) / totalSize) *
-      //         100
-      //       ).toFixed(0);
-      //       setTotalProgress(currentUploadPercentage);
-      //       const percentComplete = Math.round(
-      //         (progressEvent.loaded * 100) / progressEvent.total
-      //       );
-      //       setUploadProgress((prevProgress) => ({
-      //         ...prevProgress,
-      //         [index]: percentComplete,
-      //       }));
-      //     },
-      //   });
-      //   console.log(
-      //     "Reponse from upload progress update complete",
-      //     response.data
-      //   );
-      // }
+
+      if (folderUploadResponse.data?.uploadFolder.status === 200) {
+        folderData.map(async (folder, index) => {
+          let file = folder.file;
+          const url = "https://coding.load.vshare.net/upload";
+          const newName = Math.floor(1111111 + Math.random() * 9999999);
+
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const extension = file?.name?.lastIndexOf(".");
+          const fileExtension = file.name?.slice(extension);
+          const secretKey = "jsje3j3,02.3j2jk";
+          const headers = {
+            REGION: "sg",
+            BASE_HOSTNAME: "storage.bunnycdn.com",
+            STORAGE_ZONE_NAME: "beta-vshare",
+            ACCESS_KEY: "a4287d4c-7e6c-4643-a829f030bc10-98a9-42c3",
+            PATH: "6722542899692-114",
+            FILENAME: `${newName}${fileExtension}`,
+            PATH_FOR_THUMBNAIL: "6722542899692-114",
+          };
+
+          const key = CryptoJS.enc.Utf8.parse(secretKey);
+          const iv = CryptoJS.lib.WordArray.random(16);
+          const encrypted = CryptoJS.AES.encrypt(JSON.stringify(headers), key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7,
+          });
+          const cipherText = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+          const ivText = iv.toString(CryptoJS.enc.Base64);
+          const encryptedData = cipherText + ":" + ivText;
+
+          await axios.post(url, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              encryptedHeaders: encryptedData,
+            },
+            onUploadProgress: (progressEvent) => {
+              const currentFileUploadedSize =
+                (progressEvent.loaded * parseInt(folderData[index].size)) /
+                progressEvent.total;
+              currentUploadPercentage = (
+                ((uploadedSize + currentFileUploadedSize) / totalSize) *
+                100
+              ).toFixed(0);
+
+              setTotalProgress(currentUploadPercentage);
+              const percentComplete = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress((prevProgress) => ({
+                ...prevProgress,
+                [index]: percentComplete,
+              }));
+            },
+          });
+
+          console.log("Upload successful");
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -456,6 +469,33 @@ function UploadFile() {
                             />
                           </div>
                           <MyfolderFull />
+
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                            }}
+                          >
+                            <CircularProgressbarWithChildren
+                              value={uploadProgress[index]}
+                              styles={buildStyles({
+                                textSize: "10px",
+                                pathColor: "#4caf50",
+                                textColor: "#000",
+                              })}
+                            >
+                              {uploadProgress[index] < 100 ? (
+                                <Fragment>
+                                  <h4 style={{ fontSize: 15, color: "#fff" }}>
+                                    {uploadProgress[index]}%
+                                  </h4>
+                                </Fragment>
+                              ) : (
+                                <FaCheckCircle fontSize={27} color="#17766B" />
+                              )}
+                            </CircularProgressbarWithChildren>
+                          </div>
                           <div
                             style={{
                               margin: "1rem 0",

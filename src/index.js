@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 const token = localStorage.getItem("token");
 
 const client = new ApolloClient({
-  uri: "https://coding.vshare.net/graphql",
+  uri: process.env.REACT_APP_API_URL,
   cache: new InMemoryCache(),
   headers: {
     sabaiydevdevelopment: "jjljlfkjwelfj,lwe.jlwjrlhwek-Akj5-jksdjflj",

@@ -161,7 +161,7 @@ function UppyManual() {
                       >
                         {uploadProgress[index] < 100 ? (
                           <Fragment>
-                            <h4 style={{ fontSize: 15 }}>
+                            <h4 style={{ fontSize: 15, color: "#fff" }}>
                               {uploadProgress[index]}%
                             </h4>
                           </Fragment>
