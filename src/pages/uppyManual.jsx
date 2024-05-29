@@ -35,11 +35,11 @@ function UppyManual() {
   };
 
   const handleFileProgress = async () => {
-    for (let i = 0; i < files.length; i++) {
-      const newUploadProgress = {};
-      newUploadProgress[i] = 0;
-      setUploadProgress(newUploadProgress);
-    }
+    // for (let i = 0; i < files.length; i++) {
+    //   const newUploadProgress = {};
+    //   newUploadProgress[i] = 0;
+    //   setUploadProgress(newUploadProgress);
+    // }
 
     for (let i = 0; i < files.length; i++) {
       uploadFile({ file: files[i], index: i });
