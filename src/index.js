@@ -8,6 +8,8 @@ import { RouterProvider } from "react-router-dom";
 import routers from "./routes";
 import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
+import { ThemeProvider } from "@mui/material";
+import { muiTheme } from "./constants/muiTheme";
 const token = localStorage.getItem("token");
 
 const client = new ApolloClient({
@@ -24,7 +26,9 @@ root.render(
   <ApolloProvider client={client}>
     <RouterProvider router={routers}>
       <React.StrictMode>
-        <App />
+        <ThemeProvider theme={muiTheme}>
+          <App />
+        </ThemeProvider>
       </React.StrictMode>
     </RouterProvider>
   </ApolloProvider>
