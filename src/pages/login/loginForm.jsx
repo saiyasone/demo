@@ -41,6 +41,10 @@ function LoginComponetForm() {
       });
 
       if (res?.data?.userLogin) {
+        localStorage.setItem(
+          "userData",
+          JSON.stringify(res.data.userLogin.data?.[0])
+        );
         localStorage.setItem("token", res.data.userLogin.token);
         successMessage("Login success");
         window.location = "/";

@@ -2,16 +2,22 @@ import { gql } from "@apollo/client";
 
 export const MUTATE_LOGIN_USER = gql`
   mutation UserLogin($where: userLoginWhere!) {
-    userLogin(where: $where) {
-      data {
+  userLogin(where: $where) {
+    token
+    data {
+      _id
+      newName
+      username
+      firstName
+      lastName
+      packageId {
         _id
-        email
-        firstName
-        lastName
+        category
       }
-      token
     }
   }
+}
+
 `;
 
 export const QUERY_FILES = gql`

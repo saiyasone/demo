@@ -1,24 +1,16 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { UPLOAD_FILE } from "../apollo/upload";
 
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
 import Header from "../components/layouts/header";
-
-// import Dropbox from "@uppy/dropbox";
-// import ScreenCapture from "@uppy/screen-capture";
-// import FileInput from "@uppy/file-input";
-import xhrUpload from "@uppy/xhr-upload";
-// import Instagram from "@uppy/instagram";
 import Url from "@uppy/url";
 import Webcam from "@uppy/webcam";
 import ImageEditor from "@uppy/image-editor";
 import AudioFile from "@uppy/audio";
 import ThumbnailGenerator from "@uppy/thumbnail-generator";
-// import Tus from "@uppy/tus";
-// import AwsS3Multipart from "@uppy/aws-s3-multipart";
 
 import "@uppy/core/dist/style.min.css";
 import "@uppy/core/dist/style.css";
@@ -31,20 +23,34 @@ import {
   ButtonUploadAction,
   UploadFilesContainer,
 } from "../styles/upload-style";
-import { ENV_FILE } from "../utils/env";
 import { encryptData } from "../utils/secure";
+import { getFileNameExtension } from "../utils/file.util";
+import { AwsS3Multipart } from "uppy";
 
-function UppyPackage() {
-  const [uploadFileAction] = useMutation(UPLOAD_FILE);
+const MUTATION_CREATE_FILE = gql`
+  mutation CreateFiles($data: FilesInput!) {
+    createFiles(data: $data) {
+      _id
+      path
+    }
+  }
+`;
+
+function UppyPackageAw3() {
   const companionUrl = "https://companion.uppy.io";
   const newPath = "059d6c72-0da6-430a-8829-6d73cc04a725";
+  const endpoints = "https://coding.load.vshare.net";
+
+  const [uploadFiles] = useMutation(MUTATION_CREATE_FILE);
+
+  const [uploadFileAction] = useMutation(UPLOAD_FILE);
   const userData = localStorage.getItem("userData")
     ? JSON.parse(localStorage.getItem("userData"))
     : "";
   const [uppyInstance, setUppyInstance] = useState(() => new Uppy());
 
   async function fetchRandomData() {
-    const randomName = Math.floor(1111111 + Math.random() * 9999999);
+    const randomName = Math.floor(111111111 + Math.random() * 999999999);
     return randomName;
   }
 
@@ -110,10 +116,23 @@ function UppyPackage() {
       try {
         const uppy = new Uppy({
           id: "upload-file-id",
-          restrictions: {},
+          restrictions: {
+            maxNumberOfFiles: 10,
+          },
           autoProceed: false,
           allowMultipleUploadBatches: true,
         });
+
+        uppy.on("file-added", async (file) => {
+          try {
+            const newFilename = await fetchRandomData();
+            file.data.newFilename =
+              newFilename + getFileNameExtension(file.name);
+          } catch (error) {}
+        });
+        uppy.on("file-removed", () => {});
+        uppy.on("complete", () => {});
+
         uppy.use(Webcam);
 
         uppy.use(ThumbnailGenerator, {
@@ -138,39 +157,99 @@ function UppyPackage() {
           companionUrl,
         });
 
-        uppy.use(xhrUpload, {
-          endpoint: ENV_FILE.REACT_APP_LOAD_UPLOAD_URL,
-          formData: true,
-          method: "POST",
-          fieldName: "file",
+        uppy.use(AwsS3Multipart, {
+          abortMultipartUpload: false,
+          limit: 3,
 
-          headers: (file) => {
-            const extension = file?.name?.lastIndexOf(".");
-            const fileExtension = file.name?.slice(extension);
+          async createMultipartUpload(file) {
+            const uploading = await uploadFiles({
+              variables: {
+                data: {
+                  destination: "",
+                  newFilename: file.data.newFilename,
+                  filename: file.name,
+                  fileType: file.data.type,
+                  size: file.size.toString(),
+                  checkFile: "sub",
+                  country: "india",
+                  device: "pc",
+                  totalUploadFile: uppy.getFiles().length,
+                  newPath: `${newPath}/${file.data.newFilename}`,
+                  folder_id: "169",
+                },
+              },
+            });
 
+            const fileId = await uploading.data?.createFiles?._id;
+            if (fileId) {
+              const headers = {
+                createdBy: userData?._id,
+                FILENAME: file.data.newFilename,
+                PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
+              };
+              const _encryptHeader = await encryptData(headers);
+
+              return fetch(`${endpoints}/initiate-multipart-upload`, {
+                method: "POST",
+                headers: {
+                  encryptedheaders: _encryptHeader,
+                },
+              })
+                .then((response) => response.json())
+                .then((data) => ({
+                  uploadId: data.uploadId,
+                  key: data.key,
+                }));
+            }
+          },
+          async signPart(file, { uploadId, key, partNumber }) {
             const headers = {
-              PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
-              FILENAME: `${file.data?.customeNewName}${fileExtension}`,
               createdBy: userData?._id,
+              FILENAME: file.data.newFilename,
+              PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
             };
 
-            const encryptedData = encryptData(headers);
+            const _encryptHeader = await encryptData(headers);
 
-            return {
-              encryptedHeaders: encryptedData,
+            const formData = new FormData();
+            formData.append("partNumber", partNumber.toString());
+            formData.append("uploadId", uploadId);
+            formData.append("FILENAME", file.data.newFilename);
+
+            return fetch(`${endpoints}/generate-presigned-url`, {
+              method: "POST",
+              body: formData,
+              headers: {
+                encryptedheaders: _encryptHeader,
+              },
+            })
+              .then((response) => response.json())
+              .then((data) => ({
+                url: data.url,
+              }));
+          },
+          async completeMultipartUpload(file, { uploadId, key, parts }) {
+            const headers = {
+              createdBy: userData?._id,
+              FILENAME: file.data.newFilename,
+              PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
             };
+            const _encryptHeader = await encryptData(headers);
+
+            const formData = new FormData();
+            formData.append("parts", JSON.stringify(parts));
+            formData.append("uploadId", uploadId);
+            formData.append("FILENAME", file.data.newFileName);
+
+            return fetch(`${endpoints}/complete-multipart-upload`, {
+              method: "POST",
+              body: formData,
+              headers: {
+                encryptedheaders: _encryptHeader,
+              },
+            }).then((response) => response.json());
           },
         });
-
-        uppy.on("file-added", (file) => {
-          try {
-            fetchRandomData().then((data) => {
-              file.data.customeNewName = data;
-            });
-          } catch (error) {}
-        });
-        uppy.on("file-removed", () => {});
-        uppy.on("complete", () => {});
 
         setUppyInstance(uppy);
         return () => {
@@ -239,4 +318,4 @@ function UppyPackage() {
   );
 }
 
-export default UppyPackage;
+export default UppyPackageAw3;

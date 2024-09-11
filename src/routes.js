@@ -7,13 +7,15 @@ import Coupon from "./pages/coupon";
 import UppyPackage from "./pages/uppy";
 import UploadFile from "./pages/upload";
 import UppyManual from "./pages/uppyManual";
+import UppyPackageAw3 from "./pages/uppy-aw3";
 
 const routers = createBrowserRouter([
   {
     path: "",
     element: (
       <IsAuthenticated>
-        <UppyPackage />
+        {/* <UppyPackage /> */}
+        <UppyPackageAw3 />
       </IsAuthenticated>
     ),
   },
