@@ -4,9 +4,8 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import Contact from "./pages/contact";
 import Coupon from "./pages/coupon";
-import UppyPackage from "./pages/uppy";
 import UploadFile from "./pages/upload";
-import UppyManual from "./pages/uppyManual";
+import UppyManual from "./pages/google-ads";
 import UppyPackageAw3 from "./pages/uppy-aw3";
 
 const routers = createBrowserRouter([
@@ -32,7 +31,7 @@ const routers = createBrowserRouter([
     ),
   },
   {
-    path: "/progress",
+    path: "/google-ads",
     element: (
       <IsAuthenticated>
         <UppyManual />,

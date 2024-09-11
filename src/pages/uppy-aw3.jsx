@@ -158,8 +158,7 @@ function UppyPackageAw3() {
         });
 
         uppy.use(AwsS3Multipart, {
-          abortMultipartUpload: false,
-          limit: 3,
+          abortMultipartUpload: true,
 
           async createMultipartUpload(file) {
             const uploading = await uploadFiles({
