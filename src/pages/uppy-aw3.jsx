@@ -161,6 +161,7 @@ function UppyPackageAw3() {
         });
         uppy.on("complete", () => {
           setCanClose(false);
+          uppy.clearUploadedFiles()
         });
 
         uppy.use(Webcam);
@@ -189,63 +190,45 @@ function UppyPackageAw3() {
           shouldUseMultipart: true,
 
           async createMultipartUpload(file) {
-            const headers = {
-              createdBy: userData?._id,
-              FILENAME: file.data.newFilename,
-              PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
-            };
-            const _encryptHeader = await encryptData(headers);
-
-            return fetch(`${endpoints}/initiate-multipart-upload`, {
-              method: "POST",
-              headers: {
-                encryptedheaders: _encryptHeader,
+            const uploading = await uploadFiles({
+              variables: {
+                data: {
+                  destination: "",
+                  newFilename: file.data.newFilename,
+                  filename: file.name,
+                  fileType: file.data.type,
+                  size: file.size.toString(),
+                  checkFile: "sub",
+                  country: "india",
+                  device: "pc",
+                  totalUploadFile: uppy.getFiles().length,
+                  newPath: `${newPath}/${file.data.newFilename}`,
+                  folder_id: "169",
+                },
               },
-            })
-              .then((response) => response.json())
-              .then((data) => ({
-                uploadId: data.uploadId,
-                key: data.key,
-              }));
-            // const uploading = await uploadFiles({
-            //   variables: {
-            //     data: {
-            //       destination: "",
-            //       newFilename: file.data.newFilename,
-            //       filename: file.name,
-            //       fileType: file.data.type,
-            //       size: file.size.toString(),
-            //       checkFile: "sub",
-            //       country: "india",
-            //       device: "pc",
-            //       totalUploadFile: uppy.getFiles().length,
-            //       newPath: `${newPath}/${file.data.newFilename}`,
-            //       folder_id: "169",
-            //     },
-            //   },
-            // });
+            });
 
-            // const fileId = await uploading.data?.createFiles?._id;
-            // if (fileId) {
-            //   const headers = {
-            //     createdBy: userData?._id,
-            //     FILENAME: file.data.newFilename,
-            //     PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
-            //   };
-            //   const _encryptHeader = await encryptData(headers);
+            const fileId = await uploading.data?.createFiles?._id;
+            if (fileId) {
+              const headers = {
+                createdBy: userData?._id,
+                FILENAME: file.data.newFilename,
+                PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
+              };
+              const _encryptHeader = await encryptData(headers);
 
-            //   return fetch(`${endpoints}/initiate-multipart-upload`, {
-            //     method: "POST",
-            //     headers: {
-            //       encryptedheaders: _encryptHeader,
-            //     },
-            //   })
-            //     .then((response) => response.json())
-            //     .then((data) => ({
-            //       uploadId: data.uploadId,
-            //       key: data.key,
-            //     }));
-            // }
+              return fetch(`${endpoints}/initiate-multipart-upload`, {
+                method: "POST",
+                headers: {
+                  encryptedheaders: _encryptHeader,
+                },
+              })
+                .then((response) => response.json())
+                .then((data) => ({
+                  uploadId: data.uploadId,
+                  key: data.key,
+                }));
+            }
           },
           async signPart(file, { uploadId, key, partNumber }) {
             const headers = {
@@ -303,7 +286,7 @@ function UppyPackageAw3() {
       } catch (error) {}
     };
 
-    console.log(userData?.packageId)
+    console.log(userData?.packageId);
     initializeUppy();
   }, []);
 
