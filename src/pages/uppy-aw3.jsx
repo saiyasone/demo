@@ -6,7 +6,6 @@ import { UPLOAD_FILE } from "../apollo/upload";
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
 import Header from "../components/layouts/header";
-import Url from "@uppy/url";
 import Webcam from "@uppy/webcam";
 import ImageEditor from "@uppy/image-editor";
 import AudioFile from "@uppy/audio";
@@ -17,6 +16,8 @@ import "@uppy/core/dist/style.css";
 import "@uppy/dashboard/dist/style.min.css";
 import "@uppy/webcam/dist/style.min.css";
 import "@uppy/image-editor/dist/style.css";
+import "@uppy/audio/dist/style.min.css";
+
 import {
   ButtonActionContainer,
   ButtonCancelAction,
@@ -25,7 +26,7 @@ import {
 } from "../styles/upload-style";
 import { encryptData } from "../utils/secure";
 import { getFileNameExtension } from "../utils/file.util";
-import { AwsS3Multipart } from "uppy";
+import AwsS3Multipart from "@uppy/aws-s3";
 
 const MUTATION_CREATE_FILE = gql`
   mutation CreateFiles($data: FilesInput!) {
@@ -40,6 +41,7 @@ function UppyPackageAw3() {
   const companionUrl = "https://companion.uppy.io";
   const newPath = "059d6c72-0da6-430a-8829-6d73cc04a725";
   const endpoints = "https://coding.load.vshare.net";
+  const [canClose, setCanClose] = useState(false);
 
   const [uploadFiles] = useMutation(MUTATION_CREATE_FILE);
 
@@ -104,10 +106,34 @@ function UppyPackageAw3() {
   }
 
   async function handleUploadV1() {
+    const selectFiles = await uppyInstance.getFiles();
+    if (selectFiles.length < 0) {
+      return;
+    }
+
     try {
+      setCanClose(true);
       await uppyInstance.upload();
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  function handleResetUpload() {
+    setCanClose(false);
+    handleDone();
+  }
+
+  function handleDone() {
+    const files = uppyInstance.getFiles();
+
+    files.forEach((file) => {
+      uppyInstance.removeFile(file.id);
+    });
+
+    const dashboard = uppyInstance.getPlugin("Dashboard");
+    if (dashboard) {
+      dashboard.hide();
     }
   }
 
@@ -117,7 +143,7 @@ function UppyPackageAw3() {
         const uppy = new Uppy({
           id: "upload-file-id",
           restrictions: {
-            maxNumberOfFiles: 10,
+            maxNumberOfFiles: userData?.packageId?.numberOfFileUpload || 10,
           },
           autoProceed: false,
           allowMultipleUploadBatches: true,
@@ -130,8 +156,12 @@ function UppyPackageAw3() {
               newFilename + getFileNameExtension(file.name);
           } catch (error) {}
         });
-        uppy.on("file-removed", () => {});
-        uppy.on("complete", () => {});
+        uppy.on("file-removed", (file) => {
+          console.log("first", file);
+        });
+        uppy.on("complete", () => {
+          setCanClose(false);
+        });
 
         uppy.use(Webcam);
 
@@ -153,53 +183,69 @@ function UppyPackageAw3() {
           },
         });
 
-        uppy.use(Url, {
-          companionUrl,
-        });
-
         uppy.use(AwsS3Multipart, {
           abortMultipartUpload: true,
+          limit: 4,
+          shouldUseMultipart: true,
 
           async createMultipartUpload(file) {
-            const uploading = await uploadFiles({
-              variables: {
-                data: {
-                  destination: "",
-                  newFilename: file.data.newFilename,
-                  filename: file.name,
-                  fileType: file.data.type,
-                  size: file.size.toString(),
-                  checkFile: "sub",
-                  country: "india",
-                  device: "pc",
-                  totalUploadFile: uppy.getFiles().length,
-                  newPath: `${newPath}/${file.data.newFilename}`,
-                  folder_id: "169",
-                },
+            const headers = {
+              createdBy: userData?._id,
+              FILENAME: file.data.newFilename,
+              PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
+            };
+            const _encryptHeader = await encryptData(headers);
+
+            return fetch(`${endpoints}/initiate-multipart-upload`, {
+              method: "POST",
+              headers: {
+                encryptedheaders: _encryptHeader,
               },
-            });
+            })
+              .then((response) => response.json())
+              .then((data) => ({
+                uploadId: data.uploadId,
+                key: data.key,
+              }));
+            // const uploading = await uploadFiles({
+            //   variables: {
+            //     data: {
+            //       destination: "",
+            //       newFilename: file.data.newFilename,
+            //       filename: file.name,
+            //       fileType: file.data.type,
+            //       size: file.size.toString(),
+            //       checkFile: "sub",
+            //       country: "india",
+            //       device: "pc",
+            //       totalUploadFile: uppy.getFiles().length,
+            //       newPath: `${newPath}/${file.data.newFilename}`,
+            //       folder_id: "169",
+            //     },
+            //   },
+            // });
 
-            const fileId = await uploading.data?.createFiles?._id;
-            if (fileId) {
-              const headers = {
-                createdBy: userData?._id,
-                FILENAME: file.data.newFilename,
-                PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
-              };
-              const _encryptHeader = await encryptData(headers);
+            // const fileId = await uploading.data?.createFiles?._id;
+            // if (fileId) {
+            //   const headers = {
+            //     createdBy: userData?._id,
+            //     FILENAME: file.data.newFilename,
+            //     PATH: `${userData?.newName}-${userData?._id}/${newPath}`,
+            //   };
+            //   const _encryptHeader = await encryptData(headers);
 
-              return fetch(`${endpoints}/initiate-multipart-upload`, {
-                method: "POST",
-                headers: {
-                  encryptedheaders: _encryptHeader,
-                },
-              })
-                .then((response) => response.json())
-                .then((data) => ({
-                  uploadId: data.uploadId,
-                  key: data.key,
-                }));
-            }
+            //   return fetch(`${endpoints}/initiate-multipart-upload`, {
+            //     method: "POST",
+            //     headers: {
+            //       encryptedheaders: _encryptHeader,
+            //     },
+            //   })
+            //     .then((response) => response.json())
+            //     .then((data) => ({
+            //       uploadId: data.uploadId,
+            //       key: data.key,
+            //     }));
+            // }
           },
           async signPart(file, { uploadId, key, partNumber }) {
             const headers = {
@@ -257,6 +303,7 @@ function UppyPackageAw3() {
       } catch (error) {}
     };
 
+    console.log(userData?.packageId)
     initializeUppy();
   }, []);
 
@@ -299,14 +346,25 @@ function UppyPackageAw3() {
 
               <ButtonActionContainer>
                 <ButtonCancelAction
-                  onClick={() => {
-                    // uppyInstance.getPlugin("Dashboard").closeModal();
-                  }}
+                  onClick={
+                    canClose
+                      ? () => {
+                          console.log("you can't be closed");
+                        }
+                      : handleResetUpload
+                  }
                 >
                   Cancel
                 </ButtonCancelAction>
-                <ButtonUploadAction onClick={handleUploadV1}>
-                  Upload now
+                <ButtonUploadAction
+                  onClick={() => {
+                    if (!canClose) {
+                      console.log("uploading files ...");
+                      handleUploadV1();
+                    }
+                  }}
+                >
+                  {canClose ? "Uploading ..." : "Upload"}
                 </ButtonUploadAction>
               </ButtonActionContainer>
             </Fragment>

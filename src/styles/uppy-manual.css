@@ -5,6 +5,10 @@
   margin: 0 auto;
 }
 
+.uppy-Dashboard-inner {
+  height: 380px !important;
+}
+
 .file-upload {
   padding: 20px;
   border: 1px solid #ddd;
