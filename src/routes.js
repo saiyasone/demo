@@ -31,6 +31,10 @@ const routers = createBrowserRouter([
     ),
   },
   {
+    path: 'presign-url',
+    
+  },
+  {
     path: "/google-ads",
     element: (
       <IsAuthenticated>
