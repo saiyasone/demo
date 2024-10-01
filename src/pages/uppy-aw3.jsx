@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { gql, useMutation } from "@apollo/client";
-import { UPLOAD_FILE } from "../apollo/upload";
 
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
@@ -38,14 +37,12 @@ const MUTATION_CREATE_FILE = gql`
 `;
 
 function UppyPackageAw3() {
-  const companionUrl = "https://companion.uppy.io";
   const newPath = "059d6c72-0da6-430a-8829-6d73cc04a725";
   const endpoints = "https://coding.load.vshare.net";
   const [canClose, setCanClose] = useState(false);
 
   const [uploadFiles] = useMutation(MUTATION_CREATE_FILE);
 
-  const [uploadFileAction] = useMutation(UPLOAD_FILE);
   const userData = localStorage.getItem("userData")
     ? JSON.parse(localStorage.getItem("userData"))
     : "";
@@ -54,55 +51,6 @@ function UppyPackageAw3() {
   async function fetchRandomData() {
     const randomName = Math.floor(111111111 + Math.random() * 999999999);
     return randomName;
-  }
-
-  async function handleUpload() {
-    if (!uppyInstance.getFiles().length) return;
-
-    try {
-      const formData = new FormData();
-      const dataFile = uppyInstance.getFiles();
-
-      await dataFile.map(async (file) => {
-        const blob = new Blob([file], {
-          type: file.type,
-        });
-        const newFile = new File([blob], file.name, { type: file.type });
-        formData.append("file", newFile);
-
-        const extension = file?.name?.lastIndexOf(".");
-        const fileExtension = file.name?.slice(extension);
-
-        if (uppyInstance) {
-          const result = await uploadFileAction({
-            variables: {
-              data: {
-                newFilename: `${file.data?.customeNewName}${fileExtension}`,
-                filename: file.name,
-                fileType: file.type,
-                size: file.size.toString(),
-                checkFile: "sub",
-                country: null,
-                device: "Windows10",
-                totalUploadFile: dataFile.length,
-                folder_id: "169",
-                newPath,
-              },
-            },
-          });
-          if (result.data?.createFiles?._id) {
-            const blob = new Blob([file], {
-              type: file.type,
-            });
-            const newFile = new File([blob], file.name, { type: file.type });
-            formData.append("file", newFile);
-            await uppyInstance.upload();
-          }
-        }
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
   }
 
   async function handleUploadV1() {
