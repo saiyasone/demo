@@ -130,11 +130,6 @@ function UppyPackageAw3() {
     files.forEach((file) => {
       uppyInstance.removeFile(file.id);
     });
-
-    const dashboard = uppyInstance.getPlugin("Dashboard");
-    if (dashboard) {
-      dashboard.hide();
-    }
   }
 
   useEffect(() => {
@@ -161,7 +156,7 @@ function UppyPackageAw3() {
         });
         uppy.on("complete", () => {
           setCanClose(false);
-          uppy.clearUploadedFiles()
+          uppy.clearUploadedFiles();
         });
 
         uppy.use(Webcam);
@@ -285,8 +280,6 @@ function UppyPackageAw3() {
         };
       } catch (error) {}
     };
-
-    console.log(userData?.packageId);
     initializeUppy();
   }, []);
 

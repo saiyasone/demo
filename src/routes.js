@@ -7,6 +7,7 @@ import Coupon from "./pages/coupon";
 import UploadFile from "./pages/upload";
 import UppyManual from "./pages/google-ads";
 import UppyPackageAw3 from "./pages/uppy-aw3";
+import MultipleFileUpload from "./pages/manual-upload";
 
 const routers = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const routers = createBrowserRouter([
   {
     path: "/home",
     element: <Home />,
+  },
+  {
+    path: "/folder",
+    element: <MultipleFileUpload />,
   },
   {
     path: "/upload",

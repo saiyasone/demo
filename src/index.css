@@ -260,3 +260,8 @@ code {
   .uppy-Dashboard-Item-progress {
   top: 35%;
 }
+
+progress {
+  width: 100%;
+  margin-bottom: 10px;
+}
