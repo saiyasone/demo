@@ -151,7 +151,7 @@ const VideoEditor = () => {
               onDuration={handleDuration}
               volume={volume}
               muted={muted}
-              loop={true}
+              // loop={true}
             />
           </Box>
 
