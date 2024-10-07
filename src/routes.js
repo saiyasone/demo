@@ -8,6 +8,7 @@ import UploadFile from "./pages/upload";
 import UppyManual from "./pages/google-ads";
 import UppyPackageAw3 from "./pages/uppy-aw3";
 import MultipleFileUpload from "./pages/manual-upload";
+import VideoEditor from "./pages/video-editor";
 
 const routers = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const routers = createBrowserRouter([
   {
     path: "/home",
     element: <Home />,
+  },
+  {
+    path: "/player",
+    element: <VideoEditor />,
   },
   {
     path: "/folder",

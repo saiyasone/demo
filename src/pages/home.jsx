@@ -14,6 +14,7 @@ import { useInView } from "react-intersection-observer";
 
 function Home() {
   const [toggle, setToggle] = useState(false);
+  // const webSocket = new WebSocket("wss://localhost:8080");
 
   async function handleEvent() {
     setToggle((val) => (val = !val));

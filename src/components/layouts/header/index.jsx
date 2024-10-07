@@ -15,6 +15,7 @@ function Header() {
             <li>
               {token && <NavLink to="/">Uppy</NavLink>}
               <NavLink to="/home">Home</NavLink>
+              <NavLink to="/player">React player</NavLink>
               {token && <NavLink to="/upload">upload</NavLink>}
               {token && <NavLink to="/google-ads">Google ads</NavLink>}
               {token && <NavLink to="/folder">Presign url</NavLink>}
