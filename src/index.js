@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 // import {} from "react-router-dom"
 import App from "./App";
@@ -10,8 +10,15 @@ import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "@mui/material";
 import { muiTheme } from "./constants/muiTheme";
-const token = localStorage.getItem("token");
+import { pdfjs } from "react-pdf";
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// import { pdfjs } from "react-pdf";
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   "pdfjs-dist/build/pdf.worker.min.mjs",
+//   import.meta.url
+// ).toString();
 
+const token = localStorage.getItem("token");
 const client = new ApolloClient({
   uri: process.env.REACT_APP_API_URL,
   cache: new InMemoryCache(),
@@ -33,8 +40,4 @@ root.render(
     </RouterProvider>
   </ApolloProvider>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
