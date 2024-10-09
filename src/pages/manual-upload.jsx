@@ -3,6 +3,8 @@ import { encryptData } from "../utils/secure";
 import Header from "../components/layouts/header";
 import { convertBytetoMBandGB, getFileNameExtension } from "../utils/file.util";
 import { gql, useMutation } from "@apollo/client";
+import { LinearProgress } from "@mui/material";
+import CustomLinearProgress from "../components/customLinearProgress";
 const endpoints = "https://coding.load.vshare.net/";
 const userData = localStorage.getItem("userData")
   ? JSON.parse(localStorage.getItem("userData"))
@@ -12,7 +14,7 @@ async function initiateMultipartUpload(file) {
   const headers = {
     createdBy: userData?._id,
     FILENAME: file.newFilename,
-    PATH: `${userData?.newName}-${userData?._id}/757688d3-4b0f-4dc5-ab73-daab881882a8`,
+    PATH: `${userData?.newName}-${userData?._id}`,
   };
   const _encryptHeader = await encryptData(headers);
 
@@ -31,7 +33,7 @@ async function getPresignedUrl(uploadId, partNumber, fileName) {
   const headers = {
     createdBy: userData?._id,
     FILENAME: fileName,
-    PATH: `${userData?.newName}-${userData?._id}/757688d3-4b0f-4dc5-ab73-daab881882a8`,
+    PATH: `${userData?.newName}-${userData?._id}`,
   };
 
   const _encryptHeader = await encryptData(headers);
@@ -70,7 +72,7 @@ async function completeMultipartUpload(uploadId, parts, fileName) {
   const headers = {
     createdBy: userData?._id,
     FILENAME: fileName,
-    PATH: `${userData?.newName}-${userData?._id}/757688d3-4b0f-4dc5-ab73-daab881882a8`,
+    PATH: `${userData?.newName}-${userData?._id}`,
   };
 
   const _encryptHeader = await encryptData(headers);
@@ -120,9 +122,8 @@ function MultipleFileUpload() {
     if (event.target.files) {
       const filesArray = Array.from(event.target.files);
       setTotalProgress(0);
-      setTotalPartsUploaded(0);
-      setUploadStatus(false);
-      setUploadStatus(filesArray.map(() => "pending"));
+      setTotalPartsUploaded(0); 
+      // setUploadStatus(filesArray.map(() => "pending"));
       setSelectedFiles(filesArray);
       setUploadProgress(
         filesArray.map((file) => ({ file, progress: 0, status: "pending" }))
@@ -224,32 +225,36 @@ function MultipleFileUpload() {
           file.name
         )}`;
 
-        const uploading = await uploadFiles({
-          variables: {
-            data: {
-              destination: "",
-              newFilename: newFileName,
-              filename: file.name,
-              fileType: file.type,
-              size: file.size.toString(),
-              checkFile: "sub",
-              country: "india",
-              device: "pc",
-              totalUploadFile: selectedFiles.length,
-              newPath: `${"757688d3-4b0f-4dc5-ab73-daab881882a8"}/${newFileName}`,
-              folder_id: "728",
-            },
-          },
-        });
+        const dataFile = file;
+        dataFile.newFilename = newFileName;
 
-        const fileId = await uploading.data?.createFiles?._id;
+        return uploadFile(dataFile, index, totalParts);
+        // const uploading = await uploadFiles({
+        //   variables: {
+        //     data: {
+        //       destination: "",
+        //       newFilename: newFileName,
+        //       filename: file.name,
+        //       fileType: file.type,
+        //       size: file.size.toString(),
+        //       checkFile: "sub",
+        //       country: "india",
+        //       device: "pc",
+        //       totalUploadFile: selectedFiles.length,
+        //       newPath: `${"757688d3-4b0f-4dc5-ab73-daab881882a8"}/${newFileName}`,
+        //       folder_id: "728",
+        //     },
+        //   },
+        // });
 
-        if (fileId) {
-          const dataFile = file;
-          dataFile.newFilename = newFileName;
+        // const fileId = await uploading.data?.createFiles?._id;
 
-          return uploadFile(dataFile, index, totalParts);
-        }
+        // if (fileId) {
+        //   const dataFile = file;
+        //   dataFile.newFilename = newFileName;
+
+        //   return uploadFile(dataFile, index, totalParts);
+        // }
       });
 
       await Promise.all(uploadPromise);
@@ -277,13 +282,13 @@ function MultipleFileUpload() {
   const handleClearData = () => {
     fileRef.current.value = "";
     setTotalPartsUploaded(0);
-    setUploadStatus(false);
+    setUploadStatus([]);
     clearInterval(timer);
   };
 
   const resetFileData = () => {
     fileRef.current.value = "";
-    setUploadStatus(false);
+    setUploadStatus([]);
     setTotalPartsUploaded(0);
     setTotalProgress(0);
     setAllUploaded(false);
@@ -325,7 +330,10 @@ function MultipleFileUpload() {
 
         <div style={{ margin: "2rem 0" }}>
           <h2>Total progress {totalProgress}% </h2>
-          <progress value={totalProgress} max="100" />
+
+          <div style={{ margin: "12px 0" }}>
+            <CustomLinearProgress value={totalProgress} variant="determinate" />
+          </div>
 
           {totalTimeTaken && (
             <h3
@@ -370,7 +378,7 @@ function MultipleFileUpload() {
               key={index}
               style={{
                 border: "1px solid #ccc",
-                padding: "1rem",
+                padding: "0.6rem 1rem",
                 margin: "0.7rem 0",
                 borderRadius: "5px",
               }}
@@ -380,9 +388,12 @@ function MultipleFileUpload() {
                 {convertBytetoMBandGB(progress.file?.size || 0)}{" "}
               </p>
               <p>Status: {progress.status}</p>
-              <progress value={progress.progress} max="100">
-                {progress.progress}%
-              </progress>
+
+              <div style={{ margin: "12px 0" }}>
+                <LinearProgress variant="determinate" value={progress.progress}>
+                  {progress.progress}%
+                </LinearProgress>
+              </div>
 
               {uploadTimes[index] && (
                 <p>Time taken: {uploadTimes[index].toFixed(2)} seconds</p>
