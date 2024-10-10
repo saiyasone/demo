@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { encryptData } from "../utils/secure";
 import Header from "../components/layouts/header";
-import { convertBytetoMBandGB, getFileNameExtension } from "../utils/file.util";
+import {
+  convertBytetoMBandGB,
+  convertBytetoMBandGBV2,
+  getFileNameExtension,
+} from "../utils/file.util";
 import { gql, useMutation } from "@apollo/client";
 import { LinearProgress } from "@mui/material";
 import CustomLinearProgress from "../components/customLinearProgress";
@@ -28,6 +32,7 @@ function MultipleFileUpload() {
   const [allUploaded, setAllUploaded] = useState(false);
   const fileRef = useRef(null);
   const [abortControllers, setAbortControllers] = useState([]);
+  const [uploadedSize, setUploadedSize] = useState("");
 
   const [uploadFiles] = useMutation(MUTATION_CREATE_FILE);
 
@@ -142,7 +147,15 @@ function MultipleFileUpload() {
     }
   };
 
+  function formatBytes(bytes) {
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    if (bytes === 0) return "0 Byte";
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
+  }
+
   const uploadFile = async (file, index, totalParts, controller) => {
+    let uploadedBytes = 0;
     const startTime = performance.now();
 
     try {
@@ -157,6 +170,8 @@ function MultipleFileUpload() {
         const end = Math.min(partNumber * partSize, file.size);
         const filePart = file.slice(start, end);
 
+        const partSizeInBytes = end - start; // Size of the current part
+
         const presignedUrl = await getPresignedUrl(
           uploadId,
           partNumber,
@@ -170,27 +185,17 @@ function MultipleFileUpload() {
 
         parts.push({ ETag: eTag, PartNumber: partNumber });
 
+        // Update the uploaded size
+        // uploadedBytes += partSizeInBytes;
+
+        setUploadedSize((prevState) => prevState + partSizeInBytes);
+
         // Update progress
         const progressPercentage = Math.round(
           (partNumber / numberOfParts) * 100
         );
 
         updateProgress(index, progressPercentage, "uploading");
-
-        // total progress
-        // setTotalPartsUploaded((prevTotalParts) => {
-        //   const updatedTotalParts = prevTotalParts + 1;
-        //   const progressTotalPercentage = Math.round(
-        //     (updatedTotalParts / totalParts) * 100
-        //   );
-
-        //   setTotalProgress(
-        //     progressTotalPercentage >= 100 ? 99 : progressTotalPercentage
-        //   );
-        //   console.log(progressTotalPercentage);
-
-        //   return updatedTotalParts;
-        // });
       }
 
       await completeMultipartUpload(uploadId, parts, file.newFilename);
@@ -357,7 +362,7 @@ function MultipleFileUpload() {
     if (uploadProgress.length > 0) {
       if (uploadProgress.every((progress) => progress.status === "canceled")) {
         fileRef.current.value = "";
-        console.log("files are canceled")
+        console.log("files are canceled");
         clearInterval(timer);
         setTimer(null);
         setTotalProgress(0);
@@ -379,6 +384,9 @@ function MultipleFileUpload() {
         clearInterval(timer);
         setTimer(null);
         setTotalProgress(0);
+        setTotalFileSize(0);
+        setAllUploaded(false);
+        setUploadedSize(0);
         setElapsedTime(0);
         setUploadTimes([]);
       }
@@ -402,6 +410,10 @@ function MultipleFileUpload() {
           <div style={{ margin: "12px 0" }}>
             <CustomLinearProgress value={totalProgress} variant="determinate" />
           </div>
+
+          {totalFileSize > 0 && (
+            <div>{convertBytetoMBandGBV2(totalFileSize)}</div>
+          )}
 
           {totalTimeTaken && (
             <h3
