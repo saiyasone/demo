@@ -57,6 +57,9 @@ const VideoEditor = () => {
     setVolume((prevVolume) => Math.max(prevVolume - 0.1, 0.0)); // Decrease volume by 10%, min 0.0
   };
 
+  // 100 seconds => 1:30
+  // ແຕ່ ນັບເປັນ interval
+  // 20 seconds => 00:30
   function convertSecondsToMinutes(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -69,7 +72,8 @@ const VideoEditor = () => {
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${secondFinal}`;
   }
 
-  function convertToMinutesAndSeconds(seconds) {
+  // 100 seconds => 1:30
+  function convertToLongTimer(seconds) {
     const totalMinutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.round(seconds % 60);
 
@@ -105,7 +109,7 @@ const VideoEditor = () => {
   }, [currentTime]);
 
   const dataDuration = React.useMemo(() => {
-    const data = convertToMinutesAndSeconds(duration);
+    const data = convertToLongTimer(duration);
     return data;
   }, [duration]);
 
