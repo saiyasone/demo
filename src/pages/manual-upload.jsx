@@ -357,6 +357,7 @@ function MultipleFileUpload() {
     if (uploadProgress.length > 0) {
       if (uploadProgress.every((progress) => progress.status === "canceled")) {
         fileRef.current.value = "";
+        console.log("files are canceled")
         clearInterval(timer);
         setTimer(null);
         setTotalProgress(0);
