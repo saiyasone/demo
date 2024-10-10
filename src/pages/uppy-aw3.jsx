@@ -99,9 +99,7 @@ function UppyPackageAw3() {
               newFilename + getFileNameExtension(file.name);
           } catch (error) {}
         });
-        uppy.on("file-removed", (file) => {
-          console.log("first", file);
-        });
+        uppy.on("file-removed", () => {});
         uppy.on("complete", () => {
           setCanClose(false);
           uppy.clearUploadedFiles();

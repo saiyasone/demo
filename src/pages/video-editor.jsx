@@ -131,7 +131,11 @@ const VideoEditor = () => {
           onMouseLeave={() => {
             setIsHover(false);
           }}
-          sx={{ mt: 1.5, mb: 2, position: "relative" }}
+          sx={{
+            mt: 1.5,
+            mb: 2,
+            position: "relative",
+          }}
         >
           {/* video player */}
           <Box>
@@ -189,125 +193,126 @@ const VideoEditor = () => {
           </Box>
 
           {/* action on play videos */}
-          {true && (
-            <React.Fragment>
-              {/* play time */}
+
+          <Box
+            sx={{
+              // opacity: isHover ? "1" : "0",
+              transition: "0.2s all",
+            }}
+          >
+            {/* play time */}
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                bottom: 35,
+                width: "100%",
+                zIndex: 99,
+              }}
+            >
+              <VideoTime
+                duration={duration}
+                currentTime={currentTime}
+                onSeek={handleSeek}
+              />
+            </Box>
+
+            {/* play pause and play */}
+            <Box sx={{ position: "absolute", left: 0, bottom: 7 }}>
+              <IconButton
+                sx={{ m: 0, fontSize: "1.2rem" }}
+                onClick={togglePlayPause}
+              >
+                {playing ? <FaPause /> : <FaPlay />}
+              </IconButton>
+            </Box>
+
+            {/* play sound */}
+            <Box
+              sx={{
+                position: "absolute",
+                left: 30,
+                bottom: 8,
+                width: "120px",
+                ml: 2,
+              }}
+              onMouseEnter={() => {
+                setIsSound(true);
+              }}
+              onMouseLeave={() => {
+                setIsSound(false);
+              }}
+            >
               <Box
                 sx={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: 35,
-                  width: "100%",
-                  zIndex: 99,
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
-                <VideoTime
-                  duration={duration}
-                  currentTime={currentTime}
-                  onSeek={handleSeek}
-                />
-              </Box>
-
-              {/* play pause and play */}
-              <Box sx={{ position: "absolute", left: 0, bottom: 7 }}>
-                <IconButton
-                  sx={{ m: 0, fontSize: "1.2rem" }}
-                  onClick={togglePlayPause}
-                >
-                  {playing ? <FaPause /> : <FaPlay />}
+                <IconButton size={"small"} sx={{ mr: 1 }} onClick={handleMuted}>
+                  {muted ? (
+                    <GoMute />
+                  ) : volume === 0 ? (
+                    <GoMute />
+                  ) : (
+                    <GoUnmute />
+                  )}
                 </IconButton>
-              </Box>
 
-              {/* play sound */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  left: 30,
-                  bottom: 8,
-                  width: "120px",
-                  ml: 2,
-                }}
-                onMouseEnter={() => {
-                  setIsSound(true);
-                }}
-                onMouseLeave={() => {
-                  setIsSound(false);
-                }}
-              >
                 <Box
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
+                    width: "120px",
+                    opacity: isSound ? "1" : "0",
+                    transition: "0.2s all ease-in-out",
                   }}
                 >
-                  <IconButton
-                    size={"small"}
-                    sx={{ mr: 1 }}
-                    onClick={handleMuted}
-                  >
-                    {muted ? (
-                      <GoMute />
-                    ) : volume === 0 ? (
-                      <GoMute />
-                    ) : (
-                      <GoUnmute />
-                    )}
-                  </IconButton>
-
-                  <Box
-                    sx={{
-                      width: "120px",
-                      opacity: isSound ? "1" : "0",
-                      transition: "0.2s all ease-in-out",
-                    }}
-                  >
-                    <Slider
-                      size="small"
-                      aria-label="Volume"
-                      value={volume}
-                      onChange={handleDataVolume}
-                      min={0}
-                      max={1}
-                      step={0.1}
-                    />
-                  </Box>
+                  <Slider
+                    size="small"
+                    aria-label="Volume"
+                    value={volume}
+                    onChange={handleDataVolume}
+                    min={0}
+                    max={1}
+                    step={0.1}
+                  />
                 </Box>
               </Box>
+            </Box>
 
-              {/* video on real time */}
-              {/* play pause and play */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  left: isSound ? 180 : 90,
-                  bottom: 14,
-                  transition: "0.2s all ease-in-out",
-                }}
+            {/* video on real time */}
+            {/* play pause and play */}
+            <Box
+              sx={{
+                position: "absolute",
+                left: isSound ? 180 : 90,
+                bottom: 14,
+                transition: "0.2s all ease-in-out",
+              }}
+            >
+              <Typography
+                component="p"
+                sx={{ fontSize: "14px", fontWeight: "500" }}
               >
-                <Typography
-                  component="p"
-                  sx={{ fontSize: "14px", fontWeight: "bold" }}
-                >
-                  {/* {Math.round(result.remainingSeconds)} / {dataDuration} */}
-                  {result} / {dataDuration}
-                </Typography>
-              </Box>
+                {/* {Math.round(result.remainingSeconds)} / {dataDuration} */}
+                {result} / {dataDuration}
+              </Typography>
+            </Box>
 
-              {/* play screen */}
-              <Box sx={{ position: "absolute", right: 0, bottom: 7 }}>
-                <IconButton
-                  sx={{ m: 0, fontSize: "1.2rem" }}
-                  onClick={handleFullscreen}
-                >
-                  <AiOutlineFullscreen />
-                </IconButton>
-              </Box>
-            </React.Fragment>
-          )}
+            {/* play screen */}
+            <Box sx={{ position: "absolute", right: 0, bottom: 7 }}>
+              <IconButton
+                sx={{ m: 0, fontSize: "1.2rem" }}
+                onClick={handleFullscreen}
+              >
+                <AiOutlineFullscreen />
+              </IconButton>
+            </Box>
+          </Box>
         </Box>
       </Box>
     </React.Fragment>
   );
 };
+//hjuoij
 
 export default VideoEditor;
