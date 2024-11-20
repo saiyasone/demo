@@ -14,6 +14,7 @@ import { useInView } from "react-intersection-observer";
 
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import FeedSliderPreview from "../components/PreviewFileSlide";
 
 function Home() {
   const [toggle, setToggle] = useState(false);
@@ -68,6 +69,10 @@ function Home() {
         >
           Pdf file
         </ButtonBase>
+      </Box>
+
+      <Box sx={{ px: 5 }}>
+        <FeedSliderPreview />
       </Box>
 
       {currentData === "main" && (
