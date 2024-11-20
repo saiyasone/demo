@@ -34,3 +34,30 @@ export const convertBytetoMBandGB = (size) => {
     return GB + " GB";
   }
 };
+
+export const convertBytetoMBandGBV2 = (size) => {
+  if (!size) {
+    return "0 KB";
+  }
+
+  const sizeInKB = size / 1024;
+  const sizeInMB = size / (1024 * 1024);
+  const sizeInGB = size / (1024 * 1024 * 1024);
+  const sizeInTB = size / (1024 * 1024 * 1024 * 1024);
+  if (size < 1024) {
+    const GB = size;
+    return GB + " B";
+  } else if (size >= 1024 && size < 1024 * 1024) {
+    const GB = Math.round(sizeInKB);
+    return GB + " KB";
+  } else if (size >= 1024 * 1024 && size < 1024 * 1024 * 1024) {
+    const GB = Math.round(sizeInMB);
+    return GB + " MB";
+  } else if (size >= 1024 * 1024 * 1024 * 1024) {
+    const TB = Math.round(sizeInTB);
+    return TB + " TB";
+  } else {
+    const GB = Math.round(sizeInGB);
+    return GB + " GB";
+  }
+};
