@@ -9,16 +9,16 @@ import UppyManual from "./pages/google-ads";
 import UppyPackageAw3 from "./pages/uppy-aw3";
 import MultipleFileUpload from "./pages/manual-upload";
 import VideoEditor from "./pages/video-editor";
+import VideoPreview from "./pages/video-preview";
 
 const routers = createBrowserRouter([
   {
     path: "",
-    element: (
-      <IsAuthenticated>
-        {/* <UppyPackage /> */}
-        <UppyPackageAw3 />
-      </IsAuthenticated>
-    ),
+    element: <VideoPreview />,
+    // <IsAuthenticated>
+    //   {/* <UppyPackage /> */}
+    //   <UppyPackageAw3 />
+    // </IsAuthenticated>
   },
   {
     path: "/home",
@@ -41,8 +41,7 @@ const routers = createBrowserRouter([
     ),
   },
   {
-    path: 'presign-url',
-    
+    path: "presign-url",
   },
   {
     path: "/google-ads",

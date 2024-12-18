@@ -16,7 +16,7 @@ const VideoEditor = () => {
   const [duration, setDuration] = useState(0);
 
   const playerRef = useRef(null);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const [muted, setMuted] = useState(false);
   const [isHover, setIsHover] = useState(false);
   const [isSound, setIsSound] = useState(false);
@@ -119,6 +119,23 @@ const VideoEditor = () => {
     }
   }, [muted, volume]);
 
+  const playVideo = async () => {
+    try {
+      await playerRef.current?.getInternalPlayer()?.play();
+      setPlaying(true);
+    } catch (err) {
+      console.warn("Autoplay blocked or error:", err);
+    }
+  };
+  useEffect(() => {
+    playVideo();
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("click", playVideo);
+    return () => document.removeEventListener("click", playVideo);
+  }, []);
+
   return (
     <React.Fragment>
       <Header />
@@ -144,13 +161,13 @@ const VideoEditor = () => {
               controls={false}
               url={myVideo}
               playing={playing}
-              width="100%"
               onPlay={() => {
                 setPlaying(true);
               }}
               onPause={() => {
                 setPlaying(false);
               }}
+              width="100%"
               style={{
                 borderRadius: "6px",
                 pointerEvents: isHover ? "none" : "auto",
@@ -159,7 +176,6 @@ const VideoEditor = () => {
               onDuration={handleDuration}
               volume={volume}
               muted={muted}
-              // loop={true}
             />
           </Box>
 
