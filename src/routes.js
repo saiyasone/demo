@@ -9,15 +9,23 @@ import UppyManual from "./pages/google-ads";
 import UppyPackageAw3 from "./pages/uppy-aw3";
 import MultipleFileUpload from "./pages/manual-upload";
 import VideoEditor from "./pages/video-editor";
+import TikTokFixedVideo from "./pages/tiktok";
 
 const routers = createBrowserRouter([
   {
     path: "",
     element: (
-      <IsAuthenticated>
-        {/* <UppyPackage /> */}
+      <>
         <UppyPackageAw3 />
-      </IsAuthenticated>
+      </>
+    ),
+  },
+  {
+    path: "/tiktok",
+    element: (
+      <>
+        <TikTokFixedVideo />
+      </>
     ),
   },
   {
@@ -41,8 +49,7 @@ const routers = createBrowserRouter([
     ),
   },
   {
-    path: 'presign-url',
-    
+    path: "presign-url",
   },
   {
     path: "/google-ads",
