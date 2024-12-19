@@ -28,7 +28,7 @@ import { encryptData } from "../utils/secure";
 import { getFileNameExtension } from "../utils/file.util";
 import AwsS3Multipart from "@uppy/aws-s3";
 import { UAParser } from "ua-parser-js";
-import { parse } from "bowser";
+import { getDeviceVendor } from "ua-parser-js/helpers";
 
 const MUTATION_CREATE_FILE = gql`
   mutation CreateFiles($data: FilesInput!) {
@@ -50,11 +50,13 @@ function UppyPackageAw3() {
     ? JSON.parse(localStorage.getItem("userData"))
     : "";
   const [uppyInstance, setUppyInstance] = useState(() => new Uppy());
+  const [mobile, setMobile] = useState({
+    device: null,
+    os: null,
+    vendor: null,
+    browser: null,
+  });
 
-  // devices
-  const parser = new UAParser(navigator.userAgent);
-  const uaResult = parser.getResult();
-  const browser = parse(navigator.userAgent);
   const md = new MobileDetect(navigator.userAgent);
 
   async function fetchRandomData() {
@@ -238,26 +240,18 @@ function UppyPackageAw3() {
     initializeUppy();
   }, []);
 
-  const [phone, setPhone] = useState("");
-
   useEffect(() => {
-    const uap = new UAParser();
-    console.log("Default User-Agent Result:", uap.getResult());
-
-    // Custom User-Agent examples
-    const uastring1 = navigator.userAgent;
-    uap.setUA(uastring1);
-    const result1 = uap.getResult();
-    console.log("Custom UA String 1:", result1);
-    console.log("Browser:", result1.browser);
-    console.log("Device:", result1.device);
-    console.log("OS:", result1.os);
-    console.log("Engine:", result1.engine);
-    console.log("CPU Architecture:", result1.cpu.architecture);
-
-    setPhone(uap.getDevice().model);
-    console.log("OS:", uap.getOS());
-    console.log("Browser:", uap.getBrowser());
+    (async function () {
+      const parser = new UAParser(navigator.userAgent);
+      // const uaResult = await parser.getResult().withClientHints();
+      // const vendor = getDeviceVendor(uaResult.device);
+      setMobile({
+        device: parser.getDevice(),
+        os: parser.getOS(),
+        vendor: parser.getDevice().vendor,
+        browser: parser.getBrowser().name,
+      });
+    })();
   }, []);
 
   return (
@@ -267,13 +261,25 @@ function UppyPackageAw3() {
       <Box sx={{ my: 4, mx: 4 }}>
         <UploadFilesContainer>
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Typography variant="h5">UppyPackage</Typography>
+            <Typography variant="h4" color="initial">
+              UA Parse
+            </Typography>
           </Box>
-          {/* {JSON.stringify(uaResult)} */}
-          <p>Bowser: {JSON.stringify(browser.os)}</p>
-          <p>Mobile detector: {JSON.stringify(md.phone())}</p>
-          <p>Phone: {JSON.stringify(phone)}</p>
-          {uppyInstance && (
+
+          <Typography variant="h5" sx={{ mt: 2, fontSize: "0.8rem" }}>
+            Browser: {JSON.stringify(mobile.browser)}
+          </Typography>
+          <Typography variant="h5" sx={{ mt: 2, fontSize: "0.8rem" }}>
+            Operation system: {JSON.stringify(mobile.os)}
+          </Typography>
+          <Typography variant="h5" sx={{ mt: 2, fontSize: "0.8rem" }}>
+            Device: {JSON.stringify(mobile.device)}
+          </Typography>
+          <Typography variant="h5" sx={{ mt: 2, fontSize: "0.8rem" }}>
+            Vendor: {JSON.stringify(mobile.vendor)}
+          </Typography>
+
+          {/* {uppyInstance && (
             <Fragment>
               <Dashboard
                 uppy={uppyInstance}
@@ -325,7 +331,7 @@ function UppyPackageAw3() {
                 </ButtonUploadAction>
               </ButtonActionContainer>
             </Fragment>
-          )}
+          )} */}
         </UploadFilesContainer>
       </Box>
     </Fragment>

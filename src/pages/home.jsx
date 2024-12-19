@@ -15,6 +15,7 @@ import { useInView } from "react-intersection-observer";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import FeedSliderPreview from "../components/PreviewFileSlide";
+import TikTokShort from "./tiktok";
 
 function Home() {
   const [toggle, setToggle] = useState(false);
@@ -72,7 +73,7 @@ function Home() {
       </Box>
 
       <Box sx={{ px: 5 }}>
-        <FeedSliderPreview />
+        <TikTokShort />
       </Box>
 
       {currentData === "main" && (
@@ -111,29 +112,22 @@ function Home() {
               </motion.h3>
             </Box>
           </AppContainer>
-          {/* Button */}
         </>
       )}
 
       {currentData === "pdf" && (
-        <>
+        <div>
+          <input type="file" onChange={onFileChange} accept="application/pdf" />
           <div>
-            <input
-              type="file"
-              onChange={onFileChange}
-              accept="application/pdf"
-            />
-            <div>
-              {file && (
-                <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                  {Array.from(new Array(numPages), (el, index) => (
-                    <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-                  ))}
-                </Document>
-              )}
-            </div>
+            {file && (
+              <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                {Array.from(new Array(numPages), (el, index) => (
+                  <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                ))}
+              </Document>
+            )}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

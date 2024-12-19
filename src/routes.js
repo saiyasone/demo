@@ -9,16 +9,24 @@ import UppyManual from "./pages/google-ads";
 import UppyPackageAw3 from "./pages/uppy-aw3";
 import MultipleFileUpload from "./pages/manual-upload";
 import VideoEditor from "./pages/video-editor";
-import VideoPreview from "./pages/video-preview";
+import TikTokFixedVideo from "./pages/tiktok";
 
 const routers = createBrowserRouter([
   {
     path: "",
-    element: <VideoPreview />,
-    // <IsAuthenticated>
-    //   {/* <UppyPackage /> */}
-    //   <UppyPackageAw3 />
-    // </IsAuthenticated>
+    element: (
+      <>
+        <UppyPackageAw3 />
+      </>
+    ),
+  },
+  {
+    path: "/tiktok",
+    element: (
+      <>
+        <TikTokFixedVideo />
+      </>
+    ),
   },
   {
     path: "/home",
