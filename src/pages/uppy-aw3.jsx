@@ -9,6 +9,7 @@ import Webcam from "@uppy/webcam";
 import ImageEditor from "@uppy/image-editor";
 import AudioFile from "@uppy/audio";
 import ThumbnailGenerator from "@uppy/thumbnail-generator";
+import MobileDetect from "mobile-detect";
 
 import "@uppy/core/dist/style.min.css";
 import "@uppy/core/dist/style.css";
@@ -26,6 +27,8 @@ import {
 import { encryptData } from "../utils/secure";
 import { getFileNameExtension } from "../utils/file.util";
 import AwsS3Multipart from "@uppy/aws-s3";
+import { UAParser } from "ua-parser-js";
+import { parse } from "bowser";
 
 const MUTATION_CREATE_FILE = gql`
   mutation CreateFiles($data: FilesInput!) {
@@ -47,6 +50,12 @@ function UppyPackageAw3() {
     ? JSON.parse(localStorage.getItem("userData"))
     : "";
   const [uppyInstance, setUppyInstance] = useState(() => new Uppy());
+
+  // devices
+  const parser = new UAParser(navigator.userAgent);
+  const uaResult = parser.getResult();
+  const browser = parse(navigator.userAgent);
+  const md = new MobileDetect(navigator.userAgent);
 
   async function fetchRandomData() {
     const randomName = Math.floor(111111111 + Math.random() * 999999999);
@@ -229,6 +238,28 @@ function UppyPackageAw3() {
     initializeUppy();
   }, []);
 
+  const [phone, setPhone] = useState("");
+
+  useEffect(() => {
+    const uap = new UAParser();
+    console.log("Default User-Agent Result:", uap.getResult());
+
+    // Custom User-Agent examples
+    const uastring1 = navigator.userAgent;
+    uap.setUA(uastring1);
+    const result1 = uap.getResult();
+    console.log("Custom UA String 1:", result1);
+    console.log("Browser:", result1.browser);
+    console.log("Device:", result1.device);
+    console.log("OS:", result1.os);
+    console.log("Engine:", result1.engine);
+    console.log("CPU Architecture:", result1.cpu.architecture);
+
+    setPhone(uap.getDevice().model);
+    console.log("OS:", uap.getOS());
+    console.log("Browser:", uap.getBrowser());
+  }, []);
+
   return (
     <Fragment>
       <Header />
@@ -238,6 +269,10 @@ function UppyPackageAw3() {
           <Box sx={{ display: "flex", gap: "1rem" }}>
             <Typography variant="h5">UppyPackage</Typography>
           </Box>
+          {/* {JSON.stringify(uaResult)} */}
+          <p>Bowser: {JSON.stringify(browser.os)}</p>
+          <p>Mobile detector: {JSON.stringify(md.phone())}</p>
+          <p>Phone: {JSON.stringify(phone)}</p>
           {uppyInstance && (
             <Fragment>
               <Dashboard
