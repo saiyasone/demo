@@ -242,15 +242,23 @@ function UppyPackageAw3() {
 
   useEffect(() => {
     (async function () {
-      const parser = new UAParser(navigator.userAgent);
-      // const uaResult = await parser.getResult().withClientHints();
-      // const vendor = getDeviceVendor(uaResult.device);
+      const parser = new UAParser();
+      const uaResult = await parser.getResult().withClientHints();
+      const dataVendor = getDeviceVendor(uaResult.device);
+
+      const UA = new UAParser();
+      const device = UA.getDevice();
+      const os = UA.getOS();
       setMobile({
-        device: parser.getDevice(),
-        os: parser.getOS(),
-        vendor: parser.getDevice().vendor,
-        browser: parser.getBrowser().name,
+        vendor: dataVendor,
+        device,
+        os,
       });
+      // setMobile({
+      //   vendor: uaResult.device || dataVendor,
+      //   device: uaResult.device,
+      //   os: uaResult.os,
+      // });
     })();
   }, []);
 
