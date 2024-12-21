@@ -116,11 +116,6 @@ import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import SwiperVideoV2 from "../components/tiktok/SwiperVideoV2";
 import { SwiperVideoV1 } from "../components/tiktok/SwiperVideoV1";
-// import { Swiper, SwiperSlide } from "swiper/react";
-// import SwiperCore from "swiper";
-// import { Navigation, Autoplay, Mousewheel } from "swiper/modules";
-// import "swiper/css";
-// import "swiper/css/navigation";
 
 const TikTokFixedVideo = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -137,19 +132,10 @@ const TikTokFixedVideo = () => {
   };
 
   return (
-    <div className="mb-2 flex items-center justify-center mt-7 sm:mt-4">
-      <div
-        style={{
-          maxWidth: isMobile ? "100%" : "400px",
-          height: isMobile ? "600px" : "650px",
-          marginTop: isMobile ? "2rem" : "1.8rem",
-          overflow: "hidden",
-          marginLeft: isMobile ? "10px" : "",
-          marginRight: isMobile ? "10px" : "",
-        }}
-        className="mx-auto relative h-full bg-zinc-950 rounded-md flex items-center justify-center"
-      >
-        {/* <SwiperVideoV2 video={video1} /> */}
+    <React.Fragment>
+      <div className="mb-2 flex items-center justify-center mt-7 sm:mt-4">
+        {/* <SwiperVideoV2 isMobile={isMobile} video={video1} /> */}
+
         <SwiperVideoV1 isMobile={isMobile} />
       </div>
 
@@ -199,7 +185,7 @@ const TikTokFixedVideo = () => {
           </button>
         </div>
       </Drawer>
-    </div>
+    </React.Fragment>
   );
 };
 
