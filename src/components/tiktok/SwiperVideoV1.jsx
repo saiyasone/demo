@@ -46,7 +46,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
           onSlideChange={() => {}}
           spaceBetween={20}
           mousewheel={{ forceToAxis: true }}
-          className="w-full h-full"
+          // className="w-full h-full"
           style={{ height: isMobile ? "600px" : "650px" }}
         >
           {videos.map((item, index) => (
