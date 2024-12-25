@@ -7,7 +7,7 @@ import React from "react";
 
 export const SwiperVideoV1 = ({ isMobile }) => {
   const video =
-    "https://load.vshare.net/preview?path=tzhu0mm2f0h-24/2408726c-3211-440a-be66-06882f83c8bd/957639573_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4";
+    "https://s3.ap-southeast-1.wasabisys.com/server2coding.vshare.net/tiktok_feeds/00c0857f-36d5-4ef0-bc7a-aa01a1c9bd6c/tiktok/a02a8d5a-fb57-4cc4-ba89-2d6a4a59fdc256a85347-6f5a-47e4-a92d-d697755cde27_video_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ZPFGJNFWS7M1WIE3I3ZH%2F20241225%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20241225T095417Z&X-Amz-Expires=3600&X-Amz-Signature=9d898c16561150aecb84257d2e3c8dbf1cd53b3dc7f201d246d5b25caecf7fbb&X-Amz-SignedHeaders=host&x-id=GetObject";
   const video1 =
     "https://load.vshare.net/preview?path=tzhu0mm2f0h-24/2408726c-3211-440a-be66-06882f83c8bd/0fac7233-c97a-41c7-8e38-718706c32f26/1028183517_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4";
   const video2 =
@@ -37,8 +37,9 @@ export const SwiperVideoV1 = ({ isMobile }) => {
           marginTop: isMobile ? "2rem" : "1rem",
           marginLeft: isMobile ? "10px" : "",
           marginRight: isMobile ? "10px" : "",
+          // height: isMobile ? "550px" : "650px",
         }}
-        className="mx-auto relative bg-zinc-950 rounded-md flex items-center justify-center"
+        className="mx-auto relative bg-zinc-950 rounded-md flex items-center justify-center feed-container"
       >
         <Swiper
           direction={"vertical"}
@@ -47,7 +48,8 @@ export const SwiperVideoV1 = ({ isMobile }) => {
           spaceBetween={20}
           mousewheel={{ forceToAxis: true }}
           // className="w-full h-full"
-          style={{ height: isMobile ? "600px" : "650px" }}
+          // style={{ height: isMobile ? "600px" : "650px" }}
+          style={{ height: "100%", width: "100%" }}
         >
           {videos.map((item, index) => (
             <SwiperSlide
