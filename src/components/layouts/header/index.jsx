@@ -13,13 +13,13 @@ function Header() {
 
           <ul>
             <li>
-              {token && <NavLink to="/">Uppy</NavLink>}
+              <NavLink to="/">Uppy</NavLink>
               <NavLink to="/home">Home</NavLink>
               <NavLink to="/tiktok">Tiktok</NavLink>
               <NavLink to="/player">React player</NavLink>
-              {token && <NavLink to="/upload">upload</NavLink>}
-              {token && <NavLink to="/google-ads">Google ads</NavLink>}
-              {token && <NavLink to="/folder">Presign url</NavLink>}
+              <NavLink to="/upload">upload</NavLink>
+              <NavLink to="/google-ads">Google ads</NavLink>
+              <NavLink to="/folder">Presign url</NavLink>
               <NavLink to="/login">Login</NavLink>
             </li>
           </ul>

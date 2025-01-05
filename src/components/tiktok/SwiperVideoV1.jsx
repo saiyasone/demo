@@ -3,21 +3,23 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import ReactPlayer from "react-player";
 
 export const SwiperVideoV1 = ({ isMobile }) => {
   const video =
-    "https://s3.ap-southeast-1.wasabisys.com/server2coding.vshare.net/tiktok_feeds/00c0857f-36d5-4ef0-bc7a-aa01a1c9bd6c/tiktok/a02a8d5a-fb57-4cc4-ba89-2d6a4a59fdc256a85347-6f5a-47e4-a92d-d697755cde27_video_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ZPFGJNFWS7M1WIE3I3ZH%2F20241225%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20241225T095417Z&X-Amz-Expires=3600&X-Amz-Signature=9d898c16561150aecb84257d2e3c8dbf1cd53b3dc7f201d246d5b25caecf7fbb&X-Amz-SignedHeaders=host&x-id=GetObject";
+    "https://videos.pexels.com/video-files/27906428/12258960_1440_2560_25fps.mp4";
   const video1 =
     "https://load.vshare.net/preview?path=tzhu0mm2f0h-24/2408726c-3211-440a-be66-06882f83c8bd/0fac7233-c97a-41c7-8e38-718706c32f26/1028183517_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4";
   const video2 =
     "https://videos.pexels.com/video-files/27906428/12258960_1440_2560_25fps.mp4";
 
+  const videoRefs = React.useRef([]);
   const videos = [
-    {
-      key: 1,
-      video,
-    },
+    // {
+    //   key: 1,
+    //   video,
+    // },
     {
       key: 2,
       video: video1,
@@ -27,6 +29,58 @@ export const SwiperVideoV1 = ({ isMobile }) => {
       video: video2,
     },
   ];
+  const [playingIndex, setPlayingIndex] = useState(0);
+  const [duration, setDuration] = useState(0);
+  // const [currentTime, setCurrentTime] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  const handleSlideChangeV1 = (swiper) => {
+    setPlayingIndex(swiper.activeIndex);
+    setProgress(0);
+
+    // Reset all videos and play the active one
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        if (index === swiper.activeIndex) {
+          video.seekTo(0); // Reset active video to start
+          video.getInternalPlayer().play(); // Play the active video
+        } else {
+          video.getInternalPlayer().pause(); // Pause other videos
+          video.seekTo(0); // Reset other videos to start
+        }
+      }
+    });
+
+    fetchDuration();
+  };
+
+  const handleSlideChange = (swiper) => {
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        if (index === swiper.activeIndex) {
+          video.play();
+        } else {
+          video.pause();
+          video.currentTime = 0; // Reset video to the beginning
+        }
+      }
+    });
+  };
+
+  const onDuration = (duration, index) => {
+    if (index === playingIndex) {
+      setDuration(duration);
+    }
+  };
+
+  const fetchDuration = () => {
+    const activeVideoRef = videoRefs.current[playingIndex];
+    if (activeVideoRef && activeVideoRef.getDuration) {
+      setProgress(0);
+      const duration = activeVideoRef.getDuration();
+      setDuration(duration);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -44,12 +98,12 @@ export const SwiperVideoV1 = ({ isMobile }) => {
         <Swiper
           direction={"vertical"}
           modules={[Navigation, Autoplay, Mousewheel]}
-          onSlideChange={() => {}}
           spaceBetween={20}
           mousewheel={{ forceToAxis: true }}
           // className="w-full h-full"
           // style={{ height: isMobile ? "600px" : "650px" }}
           style={{ height: "100%", width: "100%" }}
+          onSlideChange={handleSlideChangeV1}
         >
           {videos.map((item, index) => (
             <SwiperSlide
@@ -65,15 +119,33 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                   }}
                   className="bg-zinc-950 relative"
                 >
-                  <video
-                    src={item.video}
-                    autoPlay
-                    loop
-                    muted
+                  <ReactPlayer
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    url={item.video}
+                    muted={true}
+                    playing={playingIndex === index}
+                    autoPlay={true}
+                    // loop={true}
+                    width={"100%"}
+                    height={"100%"}
+                    onEnded={() => {
+                      // setProgress(100);
+                    }}
+                    onProgress={(state) => {
+                      const playedPercentage = state.played * 100;
+                      setProgress(playedPercentage);
+
+                      // if (state.played >= 0.99) {
+                      //   setProgress(100);
+                      //   setTimeout(() => setProgress(0), 100);
+                      // }
+                    }}
+                    onDuration={(duration) => {
+                      onDuration(duration, index);
+                    }}
+                    onReady={fetchDuration}
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "fill",
+                      objectFit: "cover",
                       maxHeight: isMobile ? "600px" : "650px",
                     }}
                   />
@@ -85,7 +157,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                 <div className="flex items-center space-x-2">
                   <div className="w-10 h-10 rounded-full bg-gray-500"></div>
                   <div>
-                    <p className="font-bold">username</p>
+                    <p className="font-bold">username ({progress}) </p>
                     <p className="text-sm text-gray-300">@userhandle</p>
                   </div>
                 </div>
@@ -116,6 +188,13 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                   </div>
                 </div>
               </div>
+
+              <div
+                className="absolute bottom-0 h-1 left-0 right-0 bg-red-500 z-50 transition-all ease-in-out delay-150"
+                style={{
+                  width: `${progress}%`,
+                }}
+              ></div>
             </SwiperSlide>
           ))}
         </Swiper>
