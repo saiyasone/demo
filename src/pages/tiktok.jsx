@@ -133,7 +133,8 @@ const TikTokFixedVideo = () => {
 
   return (
     <React.Fragment>
-      <div className="mb-2 flex items-center justify-center mt-7 sm:mt-4">
+      {/* mb-2 flex items-center justify-center mt-7 sm:mt-4 */}
+      <div className="">
         {/* <SwiperVideoV2 isMobile={isMobile} video={video1} /> */}
 
         <SwiperVideoV1 isMobile={isMobile} />

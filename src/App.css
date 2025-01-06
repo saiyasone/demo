@@ -31,9 +31,11 @@
 .feed-container {
   height: 650px;
 }
-@media (max-width: 500px) {
+@media (max-width: 650px) {
   .feed-container {
-    max-height: 80vh;
+    /* max-height: 80vh; */
+    /* max-height: 100vh; */
+    height: 100vh;
   }
 }
 

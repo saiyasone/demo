@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import ReactPlayer from "react-player";
 
 export const SwiperVideoV1 = ({ isMobile }) => {
@@ -31,12 +31,14 @@ export const SwiperVideoV1 = ({ isMobile }) => {
   ];
   const [playingIndex, setPlayingIndex] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
   // const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);
 
   const handleSlideChangeV1 = (swiper) => {
     setPlayingIndex(swiper.activeIndex);
     setProgress(0);
+    setIsPlaying(true);
 
     // Reset all videos and play the active one
     videoRefs.current.forEach((video, index) => {
@@ -54,17 +56,17 @@ export const SwiperVideoV1 = ({ isMobile }) => {
     fetchDuration();
   };
 
-  const handleSlideChange = (swiper) => {
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        if (index === swiper.activeIndex) {
-          video.play();
-        } else {
-          video.pause();
-          video.currentTime = 0; // Reset video to the beginning
-        }
-      }
-    });
+  const togglePlayPause = (index) => {
+    const video = videoRefs.current[index];
+    if (!video) return;
+
+    if (isPlaying && index === playingIndex) {
+      video.getInternalPlayer().pause();
+      setIsPlaying(false);
+    } else {
+      video.getInternalPlayer().play();
+      setIsPlaying(true);
+    }
   };
 
   const onDuration = (duration, index) => {
@@ -88,12 +90,12 @@ export const SwiperVideoV1 = ({ isMobile }) => {
         style={{
           maxWidth: isMobile ? "100%" : "400px",
           overflow: "hidden",
-          marginTop: isMobile ? "2rem" : "1rem",
-          marginLeft: isMobile ? "10px" : "",
-          marginRight: isMobile ? "10px" : "",
-          // height: isMobile ? "550px" : "650px",
+          marginTop: isMobile ? "" : "1rem",
+          // marginLeft: isMobile ? "10px" : "",
+          // marginRight: isMobile ? "10px" : "",
+          borderRadius: isMobile ? "" : "6px",
         }}
-        className="mx-auto relative bg-zinc-950 rounded-md flex items-center justify-center feed-container"
+        className="mx-auto relative bg-zinc-950 flex items-center justify-center feed-container"
       >
         <Swiper
           direction={"vertical"}
@@ -110,12 +112,16 @@ export const SwiperVideoV1 = ({ isMobile }) => {
               key={index}
               className="w-full h-full flex items-center justify-center"
             >
-              <div className="relative rounded-md w-full">
+              <div
+                className="relative rounded-md w-full"
+                onClick={() => togglePlayPause(index)}
+              >
                 <div
                   style={{
                     height: "100%",
                     background: "#000",
                     overflow: "hidden",
+                    maxHeight: "100%",
                   }}
                   className="bg-zinc-950 relative"
                 >
@@ -125,7 +131,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                     muted={true}
                     playing={playingIndex === index}
                     autoPlay={true}
-                    // loop={true}
+                    loop={true}
                     width={"100%"}
                     height={"100%"}
                     onEnded={() => {
@@ -134,11 +140,6 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                     onProgress={(state) => {
                       const playedPercentage = state.played * 100;
                       setProgress(playedPercentage);
-
-                      // if (state.played >= 0.99) {
-                      //   setProgress(100);
-                      //   setTimeout(() => setProgress(0), 100);
-                      // }
                     }}
                     onDuration={(duration) => {
                       onDuration(duration, index);
@@ -146,7 +147,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                     onReady={fetchDuration}
                     style={{
                       objectFit: "cover",
-                      maxHeight: isMobile ? "600px" : "650px",
+                      maxHeight: isMobile ? "100%" : "650px",
                     }}
                   />
                 </div>
@@ -157,7 +158,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                 <div className="flex items-center space-x-2">
                   <div className="w-10 h-10 rounded-full bg-gray-500"></div>
                   <div>
-                    <p className="font-bold">username ({progress}) </p>
+                    <p className="font-bold">username </p>
                     <p className="text-sm text-gray-300">@userhandle</p>
                   </div>
                 </div>
@@ -169,7 +170,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                   </p>
 
                   <div className="absolute right-4 bottom-4 flex flex-col items-center space-y-4">
-                    <div className="flex flex-col items-center">
+                    <div className="flex gap-2 items-center">
                       <button
                         className="p-2 bg-gray-800 rounded-full"
                         // onClick={() => toggleComments(true)}
@@ -183,7 +184,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                           <path d="M21 6.5A4.5 4.5 0 0016.5 2h-9A4.5 4.5 0 003 6.5v9A4.5 4.5 0 007.5 20h3.586l2.828 2.828A2 2 0 0016.5 20h1.914A4.5 4.5 0 0021 15.5v-9zm-9 11h-3.586l-2.828-2.828A2 2 0 017.5 15h9a2 2 0 002-2v-9a2 2 0 00-2-2h-9a2 2 0 00-2 2v9a2 2 0 002 2H12z" />
                         </svg>
                       </button>
-                      <span className="text-sm">3.2K</span>
+                      {/* <span className="text-sm">3.2K</span> */}
                     </div>
                   </div>
                 </div>
@@ -198,7 +199,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
+      </div> 
     </React.Fragment>
   );
 };
