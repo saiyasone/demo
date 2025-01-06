@@ -3,16 +3,20 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
 export const SwiperVideoV1 = ({ isMobile }) => {
   const video =
-    "https://videos.pexels.com/video-files/27906428/12258960_1440_2560_25fps.mp4";
+    "https://v16-webapp-prime.tiktok.com/video/tos/alisg/tos-alisg-pve-0037c001/okfiuJ5KSOafQAEmMjZFEIwDCCXugIjBfxoAgD/?a=1988&bti=NDU3ZjAwOg%3D%3D&ch=0&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C&cv=1&br=1824&bt=912&cs=0&ds=6&ft=-Csk_mxjPD12NZrxAE-Ux7y2aY6e3wv25-cAp&mime_type=video_mp4&qs=0&rc=Ozo1NjdnOTg3ZzM1aGk1ZUBpajc5NnI5cnI8dzMzODczNEAuLi5iNmMzXjAxYS02MGJeYSNvbV5lMmRrYy1gLS1kMTFzcw%3D%3D&src=1&btag=e00090000&expire=1736244542&l=2025010510071479D159A1FCF0E7730B0F&ply_type=2&policy=2&signature=d319f9117113fdd5f4378bb2cea76b4c&tk=tt_chain_token";
   const video1 =
     "https://load.vshare.net/preview?path=tzhu0mm2f0h-24/2408726c-3211-440a-be66-06882f83c8bd/0fac7233-c97a-41c7-8e38-718706c32f26/1028183517_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4";
   const video2 =
     "https://videos.pexels.com/video-files/27906428/12258960_1440_2560_25fps.mp4";
+  const video3 =
+    "https://v16-webapp-prime.tiktok.com/video/tos/alisg/tos-alisg-pve-0037/oYMnS7rXFAilQVnMgIF3T3cD6f41ec9EBCBhPE/?a=1988&bti=ODszNWYuMDE6&ch=0&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C&cv=1&br=998&bt=499&cs=0&ds=6&ft=-Csk_mxjPD12NjOpAE-UxKK2aY6e3wv25NcAp&mime_type=video_mp4&qs=0&rc=N2U4OGU7NDU2aDVmZmRoOUBpam9pOmw5cnh3dzMzODgzNEA1MTM1LV4yXi4xMS1iL18wYSNvcS5nMmRraTRgLS1kL2Bzcw%3D%3D&btag=e00090000&expire=1736351272&l=20250106154621730CDC3D839BD896C3EB&ply_type=2&policy=2&signature=50e4b677b61a49875c8ed5c0621c5fa6&tk=tt_chain_token";
+  const video4 =
+    "https://v16-webapp-prime.tiktok.com/video/tos/alisg/tos-alisg-pve-0037c001/ooEVuDjIIDAfJERvQOHAdx3doCFfdY3DrZrSCf/?a=1988&bti=ODszNWYuMDE6&ch=0&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C&cv=1&br=2234&bt=1117&cs=0&ds=6&ft=-Csk_mxjPD12NKOpAE-UxE12GY6e3wv252cAp&mime_type=video_mp4&qs=0&rc=OjU4aWRnOWY7Z2k8O2c1aEBpandzcXk5cm5vdzMzODczNEA0NjFhLTQwXzYxLl41My8xYSNsbmFvMmRrc2tgLS1kMTFzcw%3D%3D&src=1&btag=e000b8000&expire=1736351249&l=20250106154705E0B96FC1E2A99298A83C&ply_type=2&policy=2&signature=f45d23c98debb0337177f6d655e85f30&tk=tt_chain_token";
 
   const videoRefs = React.useRef([]);
   const videos = [
@@ -22,12 +26,20 @@ export const SwiperVideoV1 = ({ isMobile }) => {
     // },
     {
       key: 2,
-      video: video1,
+      video: video2,
     },
     {
       key: 3,
-      video: video2,
+      video: video1,
     },
+    // {
+    //   key: 4,
+    //   video: video3,
+    // },
+    // {
+    //   key: 5,
+    //   video: video4,
+    // },
   ];
   const [playingIndex, setPlayingIndex] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -84,6 +96,14 @@ export const SwiperVideoV1 = ({ isMobile }) => {
     }
   };
 
+  const handleEnded = () => {
+    const video = videoRefs.current[playingIndex];
+    setTimeout(() => {
+      video.seekTo(0);
+      video.getInternalPlayer().play();
+    }, 1500);
+  };
+
   return (
     <React.Fragment>
       <div
@@ -131,14 +151,12 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                     muted={true}
                     playing={playingIndex === index}
                     autoPlay={true}
-                    loop={true}
                     width={"100%"}
                     height={"100%"}
-                    onEnded={() => {
-                      // setProgress(100);
-                    }}
+                    onEnded={handleEnded}
                     onProgress={(state) => {
-                      const playedPercentage = state.played * 100;
+                      console.log(state.played);
+                      const playedPercentage = state.played;
                       setProgress(playedPercentage);
                     }}
                     onDuration={(duration) => {
@@ -158,7 +176,7 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                 <div className="flex items-center space-x-2">
                   <div className="w-10 h-10 rounded-full bg-gray-500"></div>
                   <div>
-                    <p className="font-bold">username </p>
+                    <p className="font-bold">username ({progress}) </p>
                     <p className="text-sm text-gray-300">@userhandle</p>
                   </div>
                 </div>
@@ -191,15 +209,23 @@ export const SwiperVideoV1 = ({ isMobile }) => {
               </div>
 
               <div
-                className="absolute bottom-0 h-1 left-0 right-0 bg-red-500 z-50 transition-all ease-in-out delay-150"
+                className="absolute w-full bottom-0 left-0 right-0 bg-slate-300 z-50"
                 style={{
-                  width: `${progress}%`,
+                  height: "5px",
                 }}
-              ></div>
+              >
+                <div
+                  className="bg-red-600 transition-all ease-in-out delay-150"
+                  style={{
+                    width: `${progress * 100}%`,
+                    height: "inherit",
+                  }}
+                ></div>
+              </div>
             </SwiperSlide>
           ))}
         </Swiper>
-      </div> 
+      </div>
     </React.Fragment>
   );
 };
