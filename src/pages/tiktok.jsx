@@ -111,7 +111,7 @@
 
 // export default TikTokFixedVideo;
 
-import { useMediaQuery, Drawer } from "@mui/material";
+import { useMediaQuery, Drawer, Slider } from "@mui/material";
 import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import SwiperVideoV2 from "../components/tiktok/SwiperVideoV2";
@@ -120,6 +120,7 @@ import { SwiperVideoV1 } from "../components/tiktok/SwiperVideoV1";
 const TikTokFixedVideo = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const isMobile = useMediaQuery(`(max-width: 500px)`);
+
   const video =
     "https://load.vshare.net/preview?path=tzhu0mm2f0h-24/2408726c-3211-440a-be66-06882f83c8bd/957639573_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4";
   const video1 =
@@ -131,12 +132,14 @@ const TikTokFixedVideo = () => {
     setIsCommentOpen(open);
   };
 
+  const [currentTime, setCurrentTime] = useState(1);
+  const [duration, setDuration] = useState(10);
+
   return (
     <React.Fragment>
       {/* mb-2 flex items-center justify-center mt-7 sm:mt-4 */}
       <div className="">
         {/* <SwiperVideoV2 isMobile={isMobile} video={video1} /> */}
-
         <SwiperVideoV1 isMobile={isMobile} />
       </div>
 

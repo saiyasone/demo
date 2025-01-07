@@ -121,8 +121,8 @@ const VideoEditor = () => {
 
   const playVideo = async () => {
     try {
-      await playerRef.current?.getInternalPlayer()?.play();
-      setPlaying(true);
+      // await playerRef.current?.getInternalPlayer()?.play();
+      // setPlaying(true);
     } catch (err) {
       console.warn("Autoplay blocked or error:", err);
     }

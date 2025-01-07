@@ -1,6 +1,7 @@
 import { Slider } from "@mui/material";
 
 const VideoTime = ({ duration, currentTime, onSeek }) => {
+  // console.log({ duration, currentTime });
   const handleSeek = (_event, newValue) => {
     const time = parseFloat(newValue);
     onSeek(time);
