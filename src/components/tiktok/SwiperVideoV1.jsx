@@ -170,8 +170,6 @@ export const SwiperVideoV1 = ({ isMobile }) => {
           modules={[Navigation, Autoplay, Mousewheel]}
           spaceBetween={20}
           mousewheel={{ forceToAxis: true }}
-          // className="w-full h-full"
-          // style={{ height: isMobile ? "600px" : "650px" }}
           style={{ height: "100%", width: "100%", position: "relative" }}
           onSlideChange={handleSlideChangeV1}
           onSwiper={(swiper) => {
