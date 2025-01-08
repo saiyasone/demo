@@ -12,6 +12,7 @@ import { videosOnlines } from "../../constants/video.constant";
 import { Slider } from "@mui/material";
 import TimeSeek from "./TimeSeek";
 import FeedAction from "./FeedAction";
+import FeedActionV1 from "./FeedActionV1";
 
 export const SwiperVideoV1 = ({ isMobile }) => {
   const [platform, setPlatform] = useState("");
@@ -156,144 +157,161 @@ export const SwiperVideoV1 = ({ isMobile }) => {
 
       <div
         style={{
-          maxWidth: platform === "mobile" ? "100%" : "400px",
           overflow: "hidden",
-          marginTop: platform === "mobile" ? "" : "2rem",
-          borderRadius: platform === "mobile" ? "" : "6px",
-          height: platform === "mobile" ? "100vh" : "",
         }}
-        className="mx-auto relative bg-zinc-950 flex items-center justify-center feed-container"
+        className="flex justify-center"
       >
-        <Swiper
-          ref={swiperRef}
-          direction={"vertical"}
-          modules={[Navigation, Autoplay, Mousewheel]}
-          spaceBetween={20}
-          mousewheel={{ forceToAxis: true }}
-          style={{ height: "100%", width: "100%", position: "relative" }}
-          onSlideChange={handleSlideChangeV1}
-          onSwiper={(swiper) => {
-            swiperRef.current = swiper;
+        <div
+          style={{
+            maxWidth: platform === "mobile" ? "100%" : "400px",
+            overflow: "hidden",
+            marginTop: platform === "mobile" ? "" : "2rem",
+            borderRadius: platform === "mobile" ? "" : "6px",
+            height: platform === "mobile" ? "100vh" : "",
+            flex: 1,
           }}
+          className="relative bg-zinc-950 flex items-center justify-center feed-container"
         >
-          {videosOnlines.map((item, index) => (
-            <SwiperSlide
-              key={index}
-              className="w-full h-full flex items-center justify-center relative"
-              // onMouseEnter={handleEnterIsHovered}
-              // onMouseLeave={handleLeaveIsHovered}
-            >
-              <div className="relative rounded-md w-full">
-                <div
-                  style={{
-                    height: "100%",
-                    background: "#000",
-                    overflow: "hidden",
-                    maxHeight: "100%",
-                  }}
-                  className="bg-zinc-950 relative"
-                >
-                  <ReactPlayer
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    url={item.video}
-                    muted={isMuted}
-                    playing={playingIndex === index}
-                    autoPlay={true}
-                    width={"100%"}
-                    height={tablet ? "100vh" : "100%"}
-                    onEnded={handleEnded}
-                    onBuffer={() => {
-                      console.log("Loading while buffering ...");
-                      setIsBuffer(true);
-                    }}
-                    onPlay={() => {
-                      // setIsMuted(false);
-                    }}
-                    onBufferEnd={() => {
-                      console.log("Ending on buffered ...");
-                      setIsBuffer(false);
-                    }}
-                    onProgress={(state) => {
-                      setCurrentTime(state.playedSeconds);
-                    }}
-                    onDuration={(duration) => {
-                      onDuration(duration, index);
-                    }}
-                    onReady={fetchDuration}
+          <Swiper
+            ref={swiperRef}
+            direction={"vertical"}
+            modules={[Navigation, Autoplay, Mousewheel]}
+            spaceBetween={20}
+            mousewheel={{ forceToAxis: true }}
+            style={{ height: "100%", width: "100%", position: "relative" }}
+            onSlideChange={handleSlideChangeV1}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper;
+            }}
+          >
+            {videosOnlines.map((item, index) => (
+              <SwiperSlide
+                key={index}
+                className="w-full h-full flex items-center justify-center relative"
+                // onMouseEnter={handleEnterIsHovered}
+                // onMouseLeave={handleLeaveIsHovered}
+              >
+                <div className="relative rounded-md w-full">
+                  <div
                     style={{
-                      objectFit: "cover",
-                      maxHeight: platform === "mobile" ? "100vh" : "650px",
+                      height: "100%",
+                      background: "#000",
+                      overflow: "hidden",
+                      maxHeight: "100%",
                     }}
-                    onError={(err) => {
-                      try {
-                        if (err?.message) {
-                          console.error("Error message:", err.message);
-                        } else {
-                          console.error("An error occurred:", err);
-                        }
+                    className="bg-zinc-950 relative"
+                  >
+                    <ReactPlayer
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      url={item.video}
+                      muted={isMuted}
+                      playing={playingIndex === index}
+                      autoPlay={true}
+                      width={"100%"}
+                      height={tablet ? "100vh" : "100%"}
+                      onEnded={handleEnded}
+                      onBuffer={() => {
+                        console.log("Loading while buffering ...");
+                        setIsBuffer(true);
+                      }}
+                      onPlay={() => {
+                        // setIsMuted(false);
+                      }}
+                      onBufferEnd={() => {
+                        console.log("Ending on buffered ...");
+                        setIsBuffer(false);
+                      }}
+                      onProgress={(state) => {
+                        setCurrentTime(state.playedSeconds);
+                      }}
+                      onDuration={(duration) => {
+                        onDuration(duration, index);
+                      }}
+                      onReady={fetchDuration}
+                      style={{
+                        objectFit: "cover",
+                        maxHeight: platform === "mobile" ? "100vh" : "650px",
+                      }}
+                      onError={(err) => {
+                        try {
+                          if (err?.message) {
+                            console.error("Error message:", err.message);
+                          } else {
+                            console.error("An error occurred:", err);
+                          }
 
-                        // Check for specific unsupported source error
-                        if (
-                          err?.target?.error?.code ===
-                          MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED
-                        ) {
-                          console.error("The element has no supported source.");
+                          // Check for specific unsupported source error
+                          if (
+                            err?.target?.error?.code ===
+                            MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED
+                          ) {
+                            console.error(
+                              "The element has no supported source."
+                            );
+                          }
+                        } catch (error) {
+                          console.log(error);
                         }
-                      } catch (error) {
-                        console.log(error);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Overlay Content */}
-              <div className="absolute inset-0 flex flex-col rounded-lg justify-between p-4 text-white">
-                <div className="flex items-center justify-between space-x-2">
-                  <div className="flex items-center">
-                    <div className="playing-sound">
-                      <button
-                        className={`p-3 bg-gray-800 rounded-full ${
-                          tablet ? "text-3xl" : "text-lg"
-                        }`}
-                        onClick={handleIsMuted}
-                      >
-                        {isMuted ? <GoMute /> : <GoUnmute />}
-                      </button>
-                    </div>
+                      }}
+                    />
                   </div>
                 </div>
 
-                <div>
-                  <p className="text-lg mb-4">
-                    <span className="font-bold">username</span> This is a sample
-                    video description #hashtag #shorts
-                  </p>
+                {/* Overlay Content */}
+                <div className="absolute inset-0 flex flex-col rounded-lg justify-between p-4 text-white">
+                  <div className="flex items-center justify-between space-x-2">
+                    <div className="flex items-center">
+                      <div className="playing-sound">
+                        <button
+                          className={`p-3 bg-gray-800 rounded-full ${
+                            tablet ? "text-3xl" : "text-lg"
+                          }`}
+                          onClick={handleIsMuted}
+                        >
+                          {isMuted ? <GoMute /> : <GoUnmute />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
-                  {platform === "mobile" && (
-                    <FeedAction
-                      tablet={tablet}
-                      handleNavigateDown={handleNavigateDown}
-                      handleNavigateTop={handleNavigateTop}
-                      togglePlayPause={togglePlayPause}
-                    />
-                  )}
+                  <div>
+                    <p className="text-lg mb-4">
+                      <span className="font-bold">username</span> This is a
+                      sample video description #hashtag #shorts
+                    </p>
+
+                    {platform === "mobile" && (
+                      <FeedAction
+                        tablet={tablet}
+                        handleNavigateDown={handleNavigateDown}
+                        handleNavigateTop={handleNavigateTop}
+                        togglePlayPause={togglePlayPause}
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {!platform && (
-                <TimeSeek
-                  currentTime={currentTime}
-                  duration={duration}
-                  isHoverProgress={isHoverProgress}
-                  handleSeek={handleSeek}
-                  handleEnterIsHovered={handleEnterIsHovered}
-                  handleLeaveIsHovered={handleLeaveIsHovered}
-                />
-              )}
-            </SwiperSlide>
-          ))}
-        </Swiper>
+                {!platform && (
+                  <TimeSeek
+                    currentTime={currentTime}
+                    duration={duration}
+                    isHoverProgress={isHoverProgress}
+                    handleSeek={handleSeek}
+                    handleEnterIsHovered={handleEnterIsHovered}
+                    handleLeaveIsHovered={handleLeaveIsHovered}
+                  />
+                )}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        <FeedActionV1
+          tablet={tablet}
+          handleNavigateDown={handleNavigateDown}
+          handleNavigateTop={handleNavigateTop}
+          togglePlayPause={togglePlayPause}
+        />
       </div>
     </React.Fragment>
   );
