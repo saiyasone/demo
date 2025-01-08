@@ -11,6 +11,7 @@ import { GoMute, GoUnmute } from "react-icons/go";
 import { videosOnlines } from "../../constants/video.constant";
 import { Slider } from "@mui/material";
 import TimeSeek from "./TimeSeek";
+import FeedAction from "./FeedAction";
 
 export const SwiperVideoV1 = ({ isMobile }) => {
   const [platform, setPlatform] = useState("");
@@ -155,7 +156,6 @@ export const SwiperVideoV1 = ({ isMobile }) => {
 
       <div
         style={{
-          // maxWidth: isMobile ? "100%" : "400px",
           maxWidth: platform === "mobile" ? "100%" : "400px",
           overflow: "hidden",
           marginTop: platform === "mobile" ? "" : "2rem",
@@ -271,34 +271,12 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                   </p>
 
                   {platform === "mobile" && (
-                    <div className="absolute right-0 mr-6 bottom-4 flex flex-col items-center space-y-4 mb-8">
-                      <div className="flex gap-4 flex-col items-center">
-                        <button
-                          className={`p-3 bg-gray-800 rounded-full ${
-                            tablet ? "text-4xl" : "text-lg"
-                          }`}
-                          onClick={handleNavigateTop}
-                        >
-                          <FaHeart />
-                        </button>
-                        <button
-                          className={`p-3 bg-gray-800 rounded-full ${
-                            tablet ? "text-4xl" : "text-lg"
-                          }`}
-                          onClick={handleNavigateDown}
-                        >
-                          <FaCommentDots />
-                        </button>
-                        <button
-                          className={`p-3 bg-gray-800 rounded-full ${
-                            tablet ? "text-4xl" : "text-lg"
-                          }`}
-                          onClick={() => togglePlayPause(index)}
-                        >
-                          <FaBookmark />
-                        </button>
-                      </div>
-                    </div>
+                    <FeedAction
+                      tablet={tablet}
+                      handleNavigateDown={handleNavigateDown}
+                      handleNavigateTop={handleNavigateTop}
+                      togglePlayPause={togglePlayPause}
+                    />
                   )}
                 </div>
               </div>
@@ -313,21 +291,6 @@ export const SwiperVideoV1 = ({ isMobile }) => {
                   handleLeaveIsHovered={handleLeaveIsHovered}
                 />
               )}
-
-              {/* <div
-                className="absolute w-full bottom-0 left-0 right-0 bg-slate-300 z-50"
-                style={{
-                  height: "5px",
-                }}
-              >
-                <div
-                  className="bg-red-600 transition-all ease-in-out delay-150"
-                  style={{
-                    width: `${progress * 100}%`,
-                    height: "inherit",
-                  }}
-                ></div>
-              </div> */}
             </SwiperSlide>
           ))}
         </Swiper>

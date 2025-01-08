@@ -4,7 +4,7 @@ export const VideoConstants = [
     title: "Video 1",
     description: "Description for Video 1",
     source:
-      "https://load.vshare.net/preview?path=tzhu0mm2f0h-24/2408726c-3211-440a-be66-06882f83c8bd/0fac7233-c97a-41c7-8e38-718706c32f26/1028183517_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4",
+      "https://s3.ap-southeast-1.wasabisys.com/server2coding.vshare.net/tiktok_feeds/a8ae1fb6-42b6-4e22-bb68-894273212f26/tiktok/1f2fecb6-69c4-467f-9387-6bcd20549aea720d16ed-122d-4779-8c21-f833eca8f972_video_w2tpOTgifo5x0Ftjp2xtGjkOy.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ZPFGJNFWS7M1WIE3I3ZH%2F20250107%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20250107T040829Z&X-Amz-Expires=3600&X-Amz-Signature=1e60ef9abf1159e699f8a96a1014a41dd2019e945a9682df9a35b28815c1e9a8&X-Amz-SignedHeaders=host&x-id=GetObject",
   },
   {
     id: Math.floor(11111 + Math.random() * 99999),
