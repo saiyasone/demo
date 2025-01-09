@@ -5,11 +5,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
-import { UAParser } from "ua-parser-js";
-import { FaBookmark, FaCommentDots, FaHeart } from "react-icons/fa";
+import { UAParser } from "ua-parser-js"; 
 import { GoMute, GoUnmute } from "react-icons/go";
 import { videosOnlines } from "../../constants/video.constant";
-import { Slider } from "@mui/material";
+ 
 import TimeSeek from "./TimeSeek";
 import FeedAction from "./FeedAction";
 import FeedActionV1 from "./FeedActionV1";
