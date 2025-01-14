@@ -26,6 +26,7 @@ const VideoEditor = () => {
   };
 
   const handleSeek = (time) => {
+    console.log("first");
     playerRef.current.seekTo(time);
   };
 
