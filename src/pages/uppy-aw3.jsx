@@ -10,6 +10,7 @@ import ImageEditor from "@uppy/image-editor";
 import AudioFile from "@uppy/audio";
 import ThumbnailGenerator from "@uppy/thumbnail-generator";
 import MobileDetect from "mobile-detect";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import "@uppy/core/dist/style.min.css";
 import "@uppy/core/dist/style.css";
@@ -17,6 +18,8 @@ import "@uppy/dashboard/dist/style.min.css";
 import "@uppy/webcam/dist/style.min.css";
 import "@uppy/image-editor/dist/style.css";
 import "@uppy/audio/dist/style.min.css";
+import "swiper/css";
+import "swiper/css/pagination";
 
 import {
   ButtonActionContainer,
@@ -29,6 +32,7 @@ import { getFileNameExtension } from "../utils/file.util";
 import AwsS3Multipart from "@uppy/aws-s3";
 import { UAParser } from "ua-parser-js";
 import { getDeviceVendor } from "ua-parser-js/helpers";
+import { Navigation } from "swiper/modules";
 
 const MUTATION_CREATE_FILE = gql`
   mutation CreateFiles($data: FilesInput!) {
@@ -43,6 +47,22 @@ function UppyPackageAw3() {
   const newPath = "059d6c72-0da6-430a-8829-6d73cc04a725";
   const endpoints = "https://coding.load.vshare.net";
   const [canClose, setCanClose] = useState(false);
+
+  const FeedMenuTabItems = [
+    { value: "all", label: "All" },
+    { value: "food", label: "Food" },
+    { value: "fashion", label: "Fashion" },
+    { value: "tech", label: "Technology" },
+    { value: "news", label: "News" },
+    { value: "shows", label: "Shows" },
+    { value: "Beauty", label: "beauty" },
+    { value: "Games", label: "Games" },
+    { value: "anime_cartoon", label: "Anime & Cartoons" },
+    { value: "shows", label: "Shows" },
+    { value: "fitness", label: "Fitness & Health" },
+    { value: "education", label: "Education" },
+    { value: "technology", label: "Technology" },
+  ];
 
   const [uploadFiles] = useMutation(MUTATION_CREATE_FILE);
 
@@ -265,6 +285,59 @@ function UppyPackageAw3() {
   return (
     <Fragment>
       <Header />
+
+      <Box sx={{ px: 4 }}>
+        <Swiper
+          style={{
+            overflow: "hidden",
+            // display: "flex",
+          }}
+          direction="horizontal"
+          spaceBetween={10}
+          modules={[Navigation]}
+          // onSwiper={(swiper) => (swiperRef.current = swiper)}
+          breakpoints={{
+            320: { slidesPerView: 1 },
+            640: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 10 },
+          }}
+        >
+          {FeedMenuTabItems.map((tab, index) => {
+            return (
+              <SwiperSlide
+                key={index}
+                style={{
+                  position: "relative",
+                  height: "100%",
+                  display: "flex",
+                }}
+              >
+                <Box
+                  sx={{
+                    backgroundColor: "#ECECEC",
+                    color: "#fff",
+                    borderRadius: "30px",
+                    padding: "8px 20px",
+                  }}
+                  >
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      flex: 1,
+                      color: "#8E8B98",
+                      textTransform: "capitalize",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    {tab.value}
+                  </Typography>
+                </Box>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </Box>
 
       <Box sx={{ my: 4, mx: 4 }}>
         <UploadFilesContainer>
