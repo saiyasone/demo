@@ -13,7 +13,7 @@ const VideoTime = ({ duration, currentTime, onSeek }) => {
       min={0}
       max={duration}
       value={currentTime}
-      onChange={handleSeek}
+      onChangeCommitted={handleSeek}
       step={1}
     />
   );
