@@ -1,9 +1,15 @@
 import { Box, Container, createTheme, styled } from "@mui/material";
 const theme = createTheme();
 
-export const HeaderContainer = styled(Container)({});
+export const HeaderContainer = styled(Container)({
+  width: "100%",
+  position: "fixed",
+  top: 0,
+  zIndex: 999,
+  transition: "all 250ms ease",
+});
 
-export const HeaderNav = styled(Box)({
+export const HeaderNav = styled(Box)(({ isToggle }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -26,6 +32,7 @@ export const HeaderNav = styled(Box)({
 
       a: {
         textDecoration: "none",
+        color: isToggle ? "#fff" : "#000",
 
         "&:focus": {
           color: "#000",
@@ -36,4 +43,4 @@ export const HeaderNav = styled(Box)({
       },
     },
   },
-});
+}));

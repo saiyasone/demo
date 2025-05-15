@@ -10,6 +10,7 @@ import UppyPackageAw3 from "./pages/uppy-aw3";
 import MultipleFileUpload from "./pages/manual-upload";
 import VideoEditor from "./pages/video-editor";
 import TikTokFixedVideo from "./pages/tiktok";
+import AnimationPage from "./pages/animation";
 
 const routers = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const routers = createBrowserRouter([
   {
     path: "/player",
     element: <VideoEditor />,
+  },
+  {
+    path: "/animate",
+    element: <AnimationPage />,
   },
   {
     path: "/folder",
