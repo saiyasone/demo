@@ -11,6 +11,8 @@ import MultipleFileUpload from "./pages/manual-upload";
 import VideoEditor from "./pages/video-editor";
 import TikTokFixedVideo from "./pages/tiktok";
 import AnimationPage from "./pages/animation";
+import MultilingualMessageInput from "./pages/MultilingualMessageInput";
+import KeyDetector from "./pages/KeyDetector";
 
 const routers = createBrowserRouter([
   {
@@ -31,11 +33,15 @@ const routers = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <Home />,
+    element: <MultilingualMessageInput />,
   },
   {
     path: "/player",
     element: <VideoEditor />,
+  },
+  {
+    path: "/key-detector",
+    element: <KeyDetector />,
   },
   {
     path: "/animate",
@@ -52,9 +58,6 @@ const routers = createBrowserRouter([
         <UploadFile />,
       </IsAuthenticated>
     ),
-  },
-  {
-    path: "presign-url",
   },
   {
     path: "/google-ads",

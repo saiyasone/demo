@@ -40,4 +40,5 @@ root.render(
     </RouterProvider>
   </ApolloProvider>
 );
+
 reportWebVitals();

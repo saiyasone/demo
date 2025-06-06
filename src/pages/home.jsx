@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Typography, Box, Button as ButtonBase } from "@mui/material";
 import { motion } from "framer-motion";
 import { AppContainer } from "../components/Container";
@@ -16,16 +16,27 @@ import { Document, Page } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import FeedSliderPreview from "../components/PreviewFileSlide";
 import TikTokShort from "./tiktok";
+import { Filter } from "bad-words";
 
 function Home() {
   const [toggle, setToggle] = useState(false);
   const [currentData, setCurrentData] = useState("main");
   const [file, setFile] = useState(null);
   const [numPages, setNumPages] = useState(null);
+  const filter = new Filter();
 
   async function handleEvent() {
     setToggle((val) => (val = !val));
   }
+
+  const sanitizeText = (text) => {
+    return filter.clean(text);
+  };
+
+  // Usage
+  const userInput = "mother fucker";
+  const cleanText = useMemo(() => sanitizeText(userInput), []);
+  console.log(cleanText)
 
   const onFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -72,9 +83,7 @@ function Home() {
         </ButtonBase>
       </Box>
 
-      <Box sx={{ px: 5 }}>
-        <TikTokShort />
-      </Box>
+      <Box sx={{ px: 5 }}>{/* <TikTokShort /> */}</Box>
 
       {currentData === "main" && (
         <>
